@@ -8,7 +8,7 @@ async-graphql = "4.0"
 async-graphql-actix-web = "3.0"
 actix-web = "4.0.0-beta.19"
 actix-cors = "0.6.0-beta.8"
-diesel = { version = "1.4", features = ["postgres", "r2d2"] }
+diesel = { version = "2.0", features = ["postgres", "r2d2"] }
 diesel_migrations = "1.4"
 dotenv = "0.15.0"
 ipaddress = "0.1"
