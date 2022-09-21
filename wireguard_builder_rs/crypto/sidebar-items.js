@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Claims","Data that is encoded into the `JWT`"],["SecretKey","The secret key for `JWT`s"]]});

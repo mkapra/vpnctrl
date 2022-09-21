@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["_impl_identifiable_for_allowedipsmapping",""],["_impl_insertable_for_newallowedip",""],["_impl_insertable_for_newallowedipsmapping",""],["_impl_queryable_for_allowedip",""],["_impl_queryable_for_allowedipsmapping",""]],"struct":[["AllowedIP",""],["AllowedIPsMapping",""],["InputAllowedIpAddress",""],["NewAllowedIPsMapping",""],["NewAllowedIp",""]]});

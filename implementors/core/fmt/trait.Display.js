@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["wireguard_builder_rs"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.61.0/core/fmt/trait.Display.html\" title=\"trait core::fmt::Display\">Display</a> for <a class=\"struct\" href=\"wireguard_builder_rs/crypto/struct.SecretKey.html\" title=\"struct wireguard_builder_rs::crypto::SecretKey\">SecretKey</a>","synthetic":false,"types":["wireguard_builder_rs::crypto::SecretKey"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

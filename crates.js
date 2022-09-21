@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["wireguard_builder_rs"];
+window.ALL_CRATES = ["api","libwgbuilder"];

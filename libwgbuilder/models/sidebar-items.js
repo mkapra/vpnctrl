@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["allowed_ip",""],["client",""],["client_allowed_ip",""],["dns_server",""],["keypair",""],["server",""],["vpn_ip",""],["vpn_net",""]]};
