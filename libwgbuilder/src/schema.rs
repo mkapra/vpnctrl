@@ -17,4 +17,14 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(dns_servers, keypairs,);
+diesel::table! {
+    vpn_networks (id) {
+        id -> Int4,
+        network -> Varchar,
+        subnetmask -> Int4,
+        interface -> Int4,
+        port -> Int4,
+    }
+}
+
+diesel::allow_tables_to_appear_in_same_query!(dns_servers, keypairs, vpn_networks,);
