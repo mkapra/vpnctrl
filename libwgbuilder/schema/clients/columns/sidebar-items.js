@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"macro":[["__static_cond",""]],"struct":[["description",""],["dns_server_id",""],["id",""],["keepalive",""],["keypair_id",""],["name",""],["star","Represents `table_name.*`, which is sometimes needed for efficient count queries. It cannot be used in place of `all_columns`, and has a `SqlType` of `()` to prevent it being used that way"],["vpn_net_id",""]]};

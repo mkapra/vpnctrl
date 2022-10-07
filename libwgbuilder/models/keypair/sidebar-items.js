@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["KeyPair",""],["NewKeyPair",""]]};
+window.SIDEBAR_ITEMS = {"struct":[["Keypair","Keypair from the database"],["NewKeypair","A Keypair that is not created in the database yet"]]};
