@@ -81,6 +81,6 @@ impl NewKeypair<'_> {
             .expect("Could not parse public key")
             .replace("\n", "");
 
-        NewKeypair::create(NewKeypair::new(&private_key, &public_key), connection)
+        NewKeypair::create(NewKeypair::new(&private_key, &public_key), conn)
     }
 }
