@@ -7,8 +7,7 @@ use std::process::{Command, Stdio};
 use anyhow::Result;
 use diesel::{Insertable, PgConnection, Queryable, RunQueryDsl};
 
-use crate::schema::keypairs;
-use crate::Error;
+use crate::{schema::keypairs, Error};
 
 /// Keypair from the database
 #[derive(Queryable)]
@@ -48,7 +47,7 @@ impl NewKeypair<'_> {
     }
 
     /// Generates a new keypair and inserts it into the database
-    pub fn generate<'a>(connection: &mut PgConnection) -> Result<Keypair> {
+    pub fn generate<'a>(conn: &mut PgConnection) -> Result<Keypair> {
         // Generate private key
         let command_privkey = Command::new("wg")
             .arg("genkey")
