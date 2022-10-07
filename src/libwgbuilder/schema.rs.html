@@ -7,7 +7,27 @@
 <span id="7">7</span>
 <span id="8">8</span>
 <span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
 </pre><pre class="rust"><code><span class="comment">// @generated automatically by Diesel CLI.</span>
+
+<span class="macro">diesel::table!</span> {
+    <span class="ident">dns_servers</span> (<span class="ident">id</span>) {
+        <span class="ident">id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">name</span> -&gt; <span class="ident">Text</span>,
+        <span class="ident">ip</span> -&gt; <span class="ident">Text</span>,
+        <span class="ident">description</span> -&gt; <span class="ident">Nullable</span><span class="op">&lt;</span><span class="ident">Text</span><span class="op">&gt;</span>,
+    }
+}
 
 <span class="macro">diesel::table!</span> {
     <span class="ident">keypairs</span> (<span class="ident">id</span>) {
@@ -16,5 +36,7 @@
         <span class="ident">public_key</span> -&gt; <span class="ident">Text</span>,
     }
 }
+
+<span class="macro">diesel::allow_tables_to_appear_in_same_query!</span>(<span class="ident">dns_servers</span>, <span class="ident">keypairs</span>,);
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="libwgbuilder" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["DnsServer","DNS server from the database"],["NewDnsServer","DNS server that is not created in the database yet"]]};
