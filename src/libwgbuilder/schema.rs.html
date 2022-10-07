@@ -18,6 +18,16 @@
 <span id="18">18</span>
 <span id="19">19</span>
 <span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><pre class="rust"><code><span class="comment">// @generated automatically by Diesel CLI.</span>
 
 <span class="macro">diesel::table!</span> {
@@ -37,6 +47,16 @@
     }
 }
 
-<span class="macro">diesel::allow_tables_to_appear_in_same_query!</span>(<span class="ident">dns_servers</span>, <span class="ident">keypairs</span>,);
+<span class="macro">diesel::table!</span> {
+    <span class="ident">vpn_networks</span> (<span class="ident">id</span>) {
+        <span class="ident">id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">network</span> -&gt; <span class="ident">Varchar</span>,
+        <span class="ident">subnetmask</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">interface</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">port</span> -&gt; <span class="ident">Int4</span>,
+    }
+}
+
+<span class="macro">diesel::allow_tables_to_appear_in_same_query!</span>(<span class="ident">dns_servers</span>, <span class="ident">keypairs</span>, <span class="ident">vpn_networks</span>,);
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="libwgbuilder" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

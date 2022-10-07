@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["dns_server","DNS server model"],["keypair","Keypair model"]]};
+window.SIDEBAR_ITEMS = {"mod":[["dns_server","DNS server model"],["keypair","Keypair model"],["vpn_network","VPN network model"]]};
