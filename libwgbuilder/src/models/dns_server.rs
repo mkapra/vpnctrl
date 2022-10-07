@@ -20,9 +20,9 @@ pub struct DnsServer {
 #[derive(Insertable)]
 #[diesel(table_name = dns_servers)]
 pub struct NewDnsServer<'a> {
-    pub name: &'a str,
-    pub ip: &'a str,
-    pub description: Option<String>,
+    name: &'a str,
+    ip: &'a str,
+    description: Option<String>,
 }
 
 impl NewDnsServer<'_> {
