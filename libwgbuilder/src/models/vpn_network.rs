@@ -47,12 +47,7 @@ pub struct NewVpnNetwork<'a> {
 
 impl NewVpnNetwork<'_> {
     /// Returns a new VPN network that is ready to be inserted into the database
-    pub fn new(
-        network: &str,
-        subnetmask: i32,
-        interface: i32,
-        port: i32,
-    ) -> NewVpnNetwork {
+    pub fn new(network: &str, subnetmask: i32, interface: i32, port: i32) -> NewVpnNetwork {
         NewVpnNetwork {
             network,
             subnetmask,
