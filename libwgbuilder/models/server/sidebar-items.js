@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["NewServer","Server that is not created in the database yet"],["Server","Server from the database"]]};

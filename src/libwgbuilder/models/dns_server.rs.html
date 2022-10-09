@@ -47,14 +47,34 @@
 <span id="47">47</span>
 <span id="48">48</span>
 <span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
 </pre><pre class="rust"><code><span class="doccomment">//! DNS server model</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! DNS servers are used in the configs for the clients. This config option will set up the DNS server</span>
 <span class="doccomment">//! used by the client while connected to the VPN.</span>
 <span class="kw">use</span> <span class="ident">anyhow::Result</span>;
-<span class="kw">use</span> <span class="ident">diesel</span>::{<span class="ident">Insertable</span>, <span class="ident">PgConnection</span>, <span class="ident">Queryable</span>, <span class="ident">RunQueryDsl</span>};
+<span class="kw">use</span> <span class="ident">diesel</span>::{<span class="ident">Insertable</span>, <span class="ident">PgConnection</span>, <span class="ident">QueryDsl</span>, <span class="ident">Queryable</span>, <span class="ident">RunQueryDsl</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">schema::dns_servers</span>, <span class="ident">Error</span>};
+
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Model</span>;
 
 <span class="doccomment">/// DNS server from the database</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Queryable</span>)]</span>
@@ -63,6 +83,22 @@
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">ip</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Model</span> <span class="kw">for</span> <span class="ident">DnsServer</span> {
+    <span class="kw">fn</span> <span class="ident">find</span>(<span class="ident">search_id</span>: <span class="ident">i32</span>, <span class="ident">conn</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PgConnection</span>) -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="self">Self</span>: <span class="ident">Sized</span>,
+    {
+        <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::schema::dns_servers::dsl</span>::<span class="kw-2">*</span>;
+        <span class="ident">dns_servers</span>
+            .<span class="ident">find</span>(<span class="ident">search_id</span>)
+            .<span class="ident">first</span>::<span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>(<span class="ident">conn</span>)
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+                <span class="ident">anyhow::Error::from</span>(<span class="ident">e</span>)
+                    .<span class="ident">context</span>(<span class="ident">Error::DatabaseObjectNotFound</span>(<span class="string">&quot;DNS server&quot;</span>, <span class="ident">search_id</span>))
+            })
+    }
 }
 
 <span class="doccomment">/// DNS server that is not created in the database yet</span>

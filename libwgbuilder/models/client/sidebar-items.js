@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["Client","Client from the database"],["NewClient","Client that is not created in the database yet"]]};

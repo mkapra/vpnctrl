@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["NewVpnIp","A VPN IP address that is not created in the database yet"],["VpnIp","VPN IP from the database"]]};
