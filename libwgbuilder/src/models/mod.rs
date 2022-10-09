@@ -26,4 +26,7 @@ pub trait Model {
     fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
     where
         Self: Sized;
+
+    /// Deletes the given object from the database
+    fn delete(self, conn: &mut PgConnection) -> anyhow::Result<()>;
 }
