@@ -27,8 +27,7 @@ impl Model for Keypair {
         use crate::schema::keypairs::dsl::*;
         keypairs.find(search_id).first::<Self>(conn).map_err(|e| {
             anyhow::Error::from(e)
-                .context(Error::Database)
-                .context("Could not find keypair")
+                .context(Error::DatabaseObjectNotFound("keypair", search_id))
         })
     }
 }

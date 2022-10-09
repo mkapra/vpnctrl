@@ -29,8 +29,7 @@ impl Model for DnsServer {
             .first::<Self>(conn)
             .map_err(|e| {
                 anyhow::Error::from(e)
-                    .context(Error::Database)
-                    .context("Could not find DNS server")
+                    .context(Error::DatabaseObjectNotFound("DNS server", search_id))
             })
     }
 }

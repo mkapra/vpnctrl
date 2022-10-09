@@ -30,8 +30,7 @@ impl Model for VpnNetwork {
             .first::<Self>(conn)
             .map_err(|e| {
                 anyhow::Error::from(e)
-                    .context(Error::Database)
-                    .context("Could not find VPN network")
+                    .context(Error::DatabaseObjectNotFound("VPN network", search_id))
             })
     }
 }
