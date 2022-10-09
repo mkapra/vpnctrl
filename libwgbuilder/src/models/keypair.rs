@@ -43,8 +43,8 @@ impl NewKeypair<'_> {
     /// Returns a new keypair object that is ready for inserting into the database
     pub fn new<'a>(private_key: &'a str, public_key: &'a str) -> NewKeypair<'a> {
         NewKeypair {
-            private_key: &private_key,
-            public_key: &public_key,
+            private_key,
+            public_key,
         }
     }
 
@@ -61,7 +61,7 @@ impl NewKeypair<'_> {
     }
 
     /// Generates a new keypair and inserts it into the database
-    pub fn generate<'a>(conn: &mut PgConnection) -> Result<Keypair> {
+    pub fn generate(conn: &mut PgConnection) -> Result<Keypair> {
         // Generate private key
         let command_privkey = Command::new("wg")
             .arg("genkey")
@@ -70,7 +70,7 @@ impl NewKeypair<'_> {
             .stdout;
         let private_key = std::str::from_utf8(&command_privkey)
             .map_err(|e| anyhow::Error::from(e).context("Could not parse private key"))?
-            .replace("\n", "");
+            .replace('\n', "");
 
         // Generate public key
         let pubkey_command = Command::new("wg")
@@ -93,7 +93,7 @@ impl NewKeypair<'_> {
             .expect("Did not get a response from wg pubkey");
         let public_key = std::str::from_utf8(&pubkey_output.stdout)
             .expect("Could not parse public key")
-            .replace("\n", "");
+            .replace('\n', "");
 
         NewKeypair::create(NewKeypair::new(&private_key, &public_key), conn)
     }

@@ -42,7 +42,7 @@ pub struct NewVpnIp<'a> {
 
 impl NewVpnIp<'_> {
     /// Returns a new VPN IP address object that is ready for inserting into the database
-    pub fn new<'a>(address: &'a str, vpn_network_id: i32) -> NewVpnIp<'a> {
+    pub fn new(address: &str, vpn_network_id: i32) -> NewVpnIp {
         NewVpnIp {
             address,
             vpn_network_id,
