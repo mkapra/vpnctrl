@@ -3,9 +3,11 @@
 //! This model represents the network that is used for the VPN configuration. Each participant (client and server)
 //! has an ip address in this network
 use anyhow::Result;
-use diesel::{Insertable, PgConnection, Queryable, RunQueryDsl};
+use diesel::{Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl};
 
 use crate::{schema::vpn_networks, Error};
+
+use super::Model;
 
 /// VPN network from the database
 #[derive(Queryable)]
@@ -15,6 +17,23 @@ pub struct VpnNetwork {
     pub subnetmask: i32,
     pub interface: i32,
     pub port: i32,
+}
+
+impl Model for VpnNetwork {
+    fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        use crate::schema::vpn_networks::dsl::*;
+        vpn_networks
+            .find(search_id)
+            .first::<Self>(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not find VPN network")
+            })
+    }
 }
 
 /// VPN network that is not created in the database yet

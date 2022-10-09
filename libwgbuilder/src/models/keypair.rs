@@ -5,9 +5,11 @@ use std::io::Write;
 use std::process::{Command, Stdio};
 
 use anyhow::Result;
-use diesel::{Insertable, PgConnection, Queryable, RunQueryDsl};
+use diesel::{Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl};
 
 use crate::{schema::keypairs, Error};
+
+use super::Model;
 
 /// Keypair from the database
 #[derive(Queryable)]
@@ -15,6 +17,20 @@ pub struct Keypair {
     pub id: i32,
     pub private_key: String,
     pub public_key: String,
+}
+
+impl Model for Keypair {
+    fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        use crate::schema::keypairs::dsl::*;
+        keypairs.find(search_id).first::<Self>(conn).map_err(|e| {
+            anyhow::Error::from(e)
+                .context(Error::Database)
+                .context("Could not find keypair")
+        })
+    }
 }
 
 /// A Keypair that is not created in the database yet

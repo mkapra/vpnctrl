@@ -3,9 +3,11 @@
 //! DNS servers are used in the configs for the clients. This config option will set up the DNS server
 //! used by the client while connected to the VPN.
 use anyhow::Result;
-use diesel::{Insertable, PgConnection, Queryable, RunQueryDsl};
+use diesel::{Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl};
 
 use crate::{schema::dns_servers, Error};
+
+use super::Model;
 
 /// DNS server from the database
 #[derive(Queryable)]
@@ -14,6 +16,23 @@ pub struct DnsServer {
     pub name: String,
     pub ip: String,
     pub description: Option<String>,
+}
+
+impl Model for DnsServer {
+    fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        use crate::schema::dns_servers::dsl::*;
+        dns_servers
+            .find(search_id)
+            .first::<Self>(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not find DNS server")
+            })
+    }
 }
 
 /// DNS server that is not created in the database yet
