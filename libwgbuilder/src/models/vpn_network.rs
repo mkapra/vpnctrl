@@ -3,14 +3,14 @@
 //! This model represents the network that is used for the VPN configuration. Each participant (client and server)
 //! has an ip address in this network
 use anyhow::Result;
-use diesel::{Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl};
+use diesel::{Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl};
 
 use crate::{schema::vpn_networks, Error};
 
 use super::Model;
 
 /// VPN network from the database
-#[derive(Queryable)]
+#[derive(Identifiable, Queryable)]
 pub struct VpnNetwork {
     pub id: i32,
     pub network: String,

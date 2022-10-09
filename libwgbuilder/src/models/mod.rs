@@ -9,6 +9,9 @@ pub use dns_server::DnsServer;
 pub mod vpn_network;
 pub use vpn_network::VpnNetwork;
 
+pub mod vpn_ip;
+pub use vpn_ip::VpnIp;
+
 pub trait Model {
     /// Finds the object for the given `search_id` in the database
     ///

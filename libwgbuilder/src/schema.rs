@@ -18,6 +18,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    vpn_ips (id) {
+        id -> Int4,
+        address -> Varchar,
+        vpn_network_id -> Int4,
+    }
+}
+
+diesel::table! {
     vpn_networks (id) {
         id -> Int4,
         network -> Varchar,
@@ -27,4 +35,6 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(dns_servers, keypairs, vpn_networks,);
+diesel::joinable!(vpn_ips -> vpn_networks (vpn_network_id));
+
+diesel::allow_tables_to_appear_in_same_query!(dns_servers, keypairs, vpn_ips, vpn_networks,);
