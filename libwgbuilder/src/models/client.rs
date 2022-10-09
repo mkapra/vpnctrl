@@ -2,11 +2,13 @@
 //!
 //! A client is a device in the VPN network.
 use anyhow::Result;
-use diesel::{Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl, Associations};
+use diesel::{
+    Associations, Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl,
+};
 
 use crate::{schema::clients, Error};
 
-use super::{Model, Keypair, DnsServer, VpnIp};
+use super::{DnsServer, Keypair, Model, VpnIp};
 
 /// Client from the database
 #[derive(Identifiable, Queryable, Associations)]

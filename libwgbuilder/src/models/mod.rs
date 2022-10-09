@@ -15,6 +15,9 @@ pub use vpn_ip::VpnIp;
 pub mod client;
 pub use client::Client;
 
+pub mod server;
+pub use server::Server;
+
 pub trait Model {
     /// Finds the object for the given `search_id` in the database
     ///
