@@ -73,6 +73,7 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
 </pre><pre class="rust"><code><span class="comment">// @generated automatically by Diesel CLI.</span>
 
 <span class="macro">diesel::table!</span> {
@@ -112,6 +113,7 @@
         <span class="ident">forward_interface</span> -&gt; <span class="ident">Nullable</span><span class="op">&lt;</span><span class="ident">Text</span><span class="op">&gt;</span>,
         <span class="ident">keypair_id</span> -&gt; <span class="ident">Int4</span>,
         <span class="ident">vpn_ip_id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">external_ip</span> -&gt; <span class="ident">Varchar</span>,
     }
 }
 
