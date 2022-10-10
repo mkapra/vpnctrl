@@ -3,11 +3,12 @@
 //! The server is the gateway for the clients
 use anyhow::Result;
 use diesel::{
-    prelude::*, Associations, Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl,
+    prelude::*, Associations, Identifiable, Insertable, PgConnection, QueryDsl, Queryable,
+    RunQueryDsl,
 };
 use sailfish::TemplateOnce;
 
-use crate::{schema::servers, Error, models::Client};
+use crate::{models::Client, schema::servers, Error};
 
 use super::{Keypair, Model, VpnIp, VpnNetwork};
 
