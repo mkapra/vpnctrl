@@ -3,12 +3,13 @@
 //! The server is the gateway for the clients
 use anyhow::Result;
 use diesel::{
-    Associations, Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl,
+    prelude::*, Associations, Identifiable, Insertable, PgConnection, QueryDsl, Queryable, RunQueryDsl,
 };
+use sailfish::TemplateOnce;
 
-use crate::{schema::servers, Error};
+use crate::{schema::servers, Error, models::Client};
 
-use super::{Keypair, Model, VpnIp};
+use super::{Keypair, Model, VpnIp, VpnNetwork};
 
 /// Server from the database
 #[derive(Identifiable, Queryable, Associations)]
@@ -34,6 +35,67 @@ impl Model for Server {
             anyhow::Error::from(e).context(Error::DatabaseObjectNotFound("server", search_id))
         })
     }
+}
+
+impl Server {
+    /// Returns a wireguard configuration for the server
+    pub fn configuration(&self, conn: &mut PgConnection) -> Result<String> {
+        let vpn_ip = VpnIp::find(self.vpn_ip_id, conn)?;
+        let vpn_network = VpnNetwork::find(vpn_ip.vpn_network_id, conn)?;
+        let keypair = Keypair::find(self.keypair_id, conn)?;
+
+        use crate::schema::{
+            clients,
+            vpn_ips::{self, vpn_network_id},
+        };
+        let clients: Vec<(Client, VpnIp)> = clients::table
+            .inner_join(vpn_ips::table)
+            .filter(vpn_network_id.eq(vpn_network.id))
+            .load(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not create config for server")
+            })?;
+        let mut template_clients = Vec::with_capacity(clients.len());
+        for (c, ip) in clients {
+            let keypair = Keypair::find(c.keypair_id, conn)?;
+
+            template_clients.push(TemplateClient {
+                name: c.name.clone(),
+                public_key: keypair.public_key,
+                ip: ip.address.clone(),
+            });
+        }
+
+        let ctx = ServerConfig {
+            ip_address: vpn_ip.address,
+            netmask: vpn_network.subnetmask,
+            listen_port: vpn_network.port,
+            private_key: keypair.private_key,
+            clients: template_clients,
+        };
+        ctx.render_once().map_err(|e| {
+            anyhow::Error::from(e).context("Could not create configuration for server")
+        })
+    }
+}
+
+/// Client representation for the server configuration template
+struct TemplateClient {
+    name: String,
+    public_key: String,
+    ip: String,
+}
+
+#[derive(TemplateOnce)]
+#[template(path = "server_configuration.stpl")]
+struct ServerConfig {
+    ip_address: String,
+    netmask: i32,
+    listen_port: i32,
+    private_key: String,
+    clients: Vec<TemplateClient>,
 }
 
 /// Server that is not created in the database yet
