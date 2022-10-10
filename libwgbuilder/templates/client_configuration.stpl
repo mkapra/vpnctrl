@@ -1,0 +1,10 @@
+[Interface]
+PrivateKey = <%= private_key %>
+Address = <%= ip_address %>/<%= netmask %>
+DNS = <%= dns_server %>
+
+[Peer]
+PublicKey = <%= peer_public_key %>
+AllowedIPs = 0.0.0.0/0
+Endpoint = <%= endpoint_address %>:<%= endpoint_port %>
+PersistentKeepalive = <%= keepalive %>

@@ -9,3 +9,4 @@ edition = "2021"
 diesel = { version = "2.0.0", features = ["postgres"] }
 thiserror = "1.0.37"
 anyhow = "1.0.65"
+sailfish = "0.4.0"
