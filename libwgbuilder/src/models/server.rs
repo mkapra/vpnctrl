@@ -21,6 +21,7 @@ pub struct Server {
     pub forward_interface: Option<String>,
     pub keypair_id: i32,
     pub vpn_ip_id: i32,
+    pub external_ip: String,
 }
 
 impl Model for Server {
@@ -44,23 +45,26 @@ pub struct NewServer<'a> {
     forward_interface: Option<String>,
     keypair_id: i32,
     vpn_ip_id: i32,
+    external_ip: &'a str,
 }
 
 impl NewServer<'_> {
     /// Returns a new server that is ready to be inserted into the database
-    pub fn new(
-        name: &str,
+    pub fn new<'a>(
+        name: &'a str,
         description: Option<String>,
         forward_interface: Option<String>,
         keypair_id: i32,
         vpn_ip_id: i32,
-    ) -> NewServer {
+        external_ip: &'a str,
+    ) -> NewServer<'a> {
         NewServer {
             name,
             description,
             forward_interface,
             keypair_id,
             vpn_ip_id,
+            external_ip,
         }
     }
 

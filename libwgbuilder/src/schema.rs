@@ -37,6 +37,7 @@ diesel::table! {
         forward_interface -> Nullable<Text>,
         keypair_id -> Int4,
         vpn_ip_id -> Int4,
+        external_ip -> Varchar,
     }
 }
 
