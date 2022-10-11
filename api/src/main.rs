@@ -1,4 +1,4 @@
-use async_graphql::{http::graphiql_source};
+use async_graphql::http::graphiql_source;
 use async_graphql_rocket::{GraphQLQuery, GraphQLRequest, GraphQLResponse};
 use database::DatabaseConn;
 use rocket::{get, launch, post, response::content, routes, State};

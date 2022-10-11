@@ -1,6 +1,6 @@
 //! Holds all the necessary parts for the schema
-use async_graphql::{EmptySubscription, Schema, Context};
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
+use async_graphql::{Context, EmptySubscription, Schema};
 
 use crate::database::{DatabaseConn, DatabaseConnection};
 

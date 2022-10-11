@@ -1,10 +1,10 @@
-use async_graphql::{Object, Context};
 use anyhow::Result;
+use async_graphql::{Context, Object};
 
 use libwgbuilder::models::keypair::NewKeypair as NewDbKeypair;
 
-use crate::models::Keypair;
 use super::get_db_connection;
+use crate::models::Keypair;
 
 pub struct Mutation;
 
