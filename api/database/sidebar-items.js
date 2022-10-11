@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["DatabaseConn","This struct is responsible for the database connection pool"]],"type":[["DatabaseConnection","Single connection to the database"],["DatabasePool","Pool for database connections"]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["build_schema","Creates a schema and returns it"],["get_db_connection","Returns a connection from the database pool"]],"mod":[["mutation",""],["query","Queries in the GraphQL schema"]],"type":[["WireguardSchema","GraphQL schema of the API"]]};
