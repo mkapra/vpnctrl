@@ -9,3 +9,6 @@ pub use vpn_network::VpnNetwork;
 
 pub mod vpn_ip;
 pub use vpn_ip::VpnIp;
+
+pub mod client;
+pub use client::Client;

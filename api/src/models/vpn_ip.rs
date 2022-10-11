@@ -1,6 +1,7 @@
 use anyhow::Result;
 use async_graphql::ComplexObject;
 use async_graphql::Context;
+use async_graphql::InputObject;
 use async_graphql::SimpleObject;
 use libwgbuilder::models::Model;
 use libwgbuilder::models::VpnIp as DbVpnIp;
@@ -36,4 +37,10 @@ impl VpnIp {
             &mut db,
         )?))
     }
+}
+
+#[derive(InputObject)]
+pub struct NewVpnIp {
+    pub address: String,
+    pub vpn_network_id: i32
 }
