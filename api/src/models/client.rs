@@ -6,7 +6,7 @@ use libwgbuilder::models::{
 
 use crate::schema::get_db_connection;
 
-use super::{DnsServer, Keypair, VpnIp, vpn_ip::NewVpnIp};
+use super::{vpn_ip::NewVpnIp, DnsServer, Keypair, VpnIp};
 
 #[derive(SimpleObject)]
 #[graphql(complex)]

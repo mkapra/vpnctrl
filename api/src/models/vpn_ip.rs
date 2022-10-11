@@ -42,5 +42,5 @@ impl VpnIp {
 #[derive(InputObject)]
 pub struct NewVpnIp {
     pub address: String,
-    pub vpn_network_id: i32
+    pub vpn_network_id: i32,
 }

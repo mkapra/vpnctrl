@@ -12,3 +12,6 @@ pub use vpn_ip::VpnIp;
 
 pub mod client;
 pub use client::Client;
+
+pub mod server;
+pub use server::Server;

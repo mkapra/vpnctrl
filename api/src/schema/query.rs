@@ -3,7 +3,7 @@ use anyhow::Result;
 use async_graphql::{Context, Object};
 use libwgbuilder::models::Model;
 
-use crate::models::{Client, DnsServer, Keypair, VpnIp, VpnNetwork};
+use crate::models::{Client, DnsServer, Keypair, Server, VpnIp, VpnNetwork};
 
 use super::get_db_connection;
 
@@ -45,5 +45,12 @@ impl QueryRoot {
         let mut db = get_db_connection(ctx)?;
         let client = libwgbuilder::models::Client::find(id, &mut db)?;
         Ok(Client::from(client))
+    }
+
+    /// Returns the requested server
+    async fn server(&self, ctx: &Context<'_>, id: i32) -> Result<Server> {
+        let mut db = get_db_connection(ctx)?;
+        let server = libwgbuilder::models::Server::find(id, &mut db)?;
+        Ok(Server::from(server))
     }
 }
