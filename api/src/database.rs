@@ -1,33 +1,38 @@
+//! Representation of the database connection layer
+use anyhow::{Error, Result};
 use diesel::{
     r2d2::{ConnectionManager, Pool, PooledConnection},
     PgConnection,
 };
 
-/// Represents a connection pool for the database
+/// Pool for database connections
 pub type DatabasePool = Pool<ConnectionManager<PgConnection>>;
-/// Represents a connection to the database
+/// Single connection to the database
 pub type DatabaseConnection = PooledConnection<ConnectionManager<PgConnection>>;
 
-/// Wrapper for a database pool
-pub struct Database(DatabasePool);
+/// This struct is responsible for the database connection pool
+///
+/// It hides the pool from the outside and provides necessary methods for getting a single database connection
+pub struct DatabaseConn(DatabasePool);
 
-impl Database {
-    /// Creates a new `Database` with a connection pool inside
+impl DatabaseConn {
+    /// Creates a new connection pool
     ///
-    /// # Panics
-    /// Panics if the connection to the database was not successful
-    pub fn new(database_url: &str) -> Self {
-        let manager = ConnectionManager::new(database_url);
-        Database(Pool::new(manager).expect("Could not connect to database"))
+    /// # Returns
+    /// This function returns an `Err` if the database connection could not be established
+    pub fn new(url: &str) -> Result<Self> {
+        let manager = ConnectionManager::<PgConnection>::new(url);
+        Pool::builder()
+            .test_on_check_out(true)
+            .build(manager)
+            .map(DatabaseConn)
+            .map_err(|e| Error::from(e).context("Could not build database connection pool"))
     }
 
-    /// Returns a new connection to the database from the pool
-    ///
-    /// # Panics
-    /// Panics if no connection could be retrieved from the pool
-    pub fn get(&self) -> DatabaseConnection {
+    /// Returns a single connection from the connection pool
+    pub fn get(&self) -> Result<DatabaseConnection> {
         self.0
             .get()
-            .expect("Could not get database connection from pool")
+            .map_err(|e| Error::from(e).context("Could not get connection from database pool"))
     }
 }

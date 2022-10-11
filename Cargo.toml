@@ -1,2 +1,5 @@
 [workspace]
-members = ["api"]
+members = [
+  "libwgbuilder",
+  "api"
+]

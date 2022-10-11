@@ -1,21 +1,14 @@
 [package]
-name = "wireguard-builder-rs"
+name = "api"
 version = "0.1.0"
 edition = "2021"
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [dependencies]
-async-graphql = "4.0"
-async-graphql-actix-web = "3.0"
-actix-web = "4.0.0-beta.19"
-actix-cors = "0.6.0-beta.8"
-diesel = { version = "1.4", features = ["postgres", "r2d2"] }
-diesel_migrations = "1.4"
-dotenv = "0.15.0"
-ipaddress = "0.1"
-handlebars = "4.2"
-serde = "1.0"
-jsonwebtoken = "8.0"
-env_logger = "0.9"
-bcrypt = "0.13"
-chrono = "0.4"
-rand = "*"
+rocket = { version = "0.5.0-rc.2", default-features = false }
+async-graphql = "4"
+async-graphql-rocket = "4"
+libwgbuilder = { path = "../libwgbuilder" }
+diesel = { version = "2.0.1", features = ["r2d2"] }
+anyhow = "1.0.65"

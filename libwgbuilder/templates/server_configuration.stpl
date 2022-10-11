@@ -1,0 +1,13 @@
+# Server configuration
+[Interface]
+Address = <%= ip_address %>/<%= netmask %>
+ListenPort = <%= listen_port %>
+PrivateKey = <%= private_key %>
+
+# Clients
+<% for client in clients { %>
+## <%= client.name %>
+[Peer]
+PublicKey = <%= client.public_key %>
+AllowedIps = <%= client.ip %>/32
+<% } %>

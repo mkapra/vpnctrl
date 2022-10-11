@@ -3,7 +3,7 @@ name: Build Rust documentation and publish it with github pages
 on:
   push:
     branches:
-      - main
+      - mkapra
 
 jobs:
   documentation:
@@ -18,7 +18,7 @@ jobs:
         with:
           toolchain: stable
       - name: Build Rust documentation
-        run: cargo doc --no-deps --document-private-items
+        run: cargo doc --no-deps
       - name: Copy index.html to docs
         run: cp .github/index.html target/doc/
       - name: Deploy

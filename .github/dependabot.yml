@@ -4,11 +4,7 @@ updates:
     directory: "/api"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "⬆️"
-  - package-ecosystem: "npm"
-    directory: "/ui"
+  - package-ecosystem: "cargo"
+    directory: "/libwgbuilder"
     schedule:
       interval: "daily"
-    commit-message:
-      prefix: "⬆️"

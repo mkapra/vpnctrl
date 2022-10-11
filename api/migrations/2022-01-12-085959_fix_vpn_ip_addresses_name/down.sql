@@ -1,1 +1,0 @@
-ALTER TABLE Vpn_Ip_Addresses RENAME TO Vpn_Ip_Addressses;

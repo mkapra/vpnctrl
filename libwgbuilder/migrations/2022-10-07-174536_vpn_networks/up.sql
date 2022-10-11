@@ -1,0 +1,7 @@
+CREATE TABLE vpn_networks (
+    id SERIAL PRIMARY KEY,
+    network VARCHAR(255) NOT NULL,
+    subnetmask INTEGER NOT NULL DEFAULT 24,
+    interface SERIAL NOT NULL,
+    port INTEGER NOT NULL DEFAULT 51820
+);
