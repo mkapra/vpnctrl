@@ -6,7 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-diesel = { version = "2.0.0", features = ["postgres"] }
+diesel = { version = "2.0.0", features = ["postgres", "chrono"] }
 thiserror = "1.0.37"
 anyhow = "1.0.65"
-sailfish = "0.4.0"
+# sailfish = "0.4.0"
+sailfish = { git = "https://github.com/mkapra/sailfish"}
+chrono = "0.4"
+uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
