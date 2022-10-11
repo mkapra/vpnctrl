@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/api"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "cargo"
+    directory: "/libwgbuilder"
+    schedule:
+      interval: "daily"
