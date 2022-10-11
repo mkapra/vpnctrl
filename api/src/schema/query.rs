@@ -3,7 +3,10 @@ use anyhow::Result;
 use async_graphql::{Context, Object};
 use libwgbuilder::models::Model;
 
-use crate::{models::{Client, DnsServer, Keypair, Server, VpnIp, VpnNetwork}, auth::{ClientGuard, ServerGuard, UserGuard, UserRole}};
+use crate::{
+    auth::{ClientGuard, ServerGuard, UserGuard, UserRole},
+    models::{Client, DnsServer, Keypair, Server, VpnIp, VpnNetwork},
+};
 
 use super::get_db_connection;
 

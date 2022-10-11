@@ -3,7 +3,7 @@
 //! The tokens are used for the clients that are used by server and client to retrieve
 //! their VPN configuration
 use anyhow::Result;
-use diesel::{prelude::*, Insertable, PgConnection, Queryable, result::Error::NotFound};
+use diesel::{prelude::*, result::Error::NotFound, Insertable, PgConnection, Queryable};
 use uuid::Uuid;
 
 use crate::{

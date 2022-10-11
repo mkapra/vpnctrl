@@ -13,11 +13,11 @@ use crate::schema::get_db_connection;
 #[derive(Debug, PartialEq, Eq)]
 pub enum UserRole {
     Admin,
-    Client
+    Client,
 }
 
 pub struct UserGuard {
-    role: UserRole
+    role: UserRole,
 }
 
 impl UserGuard {
@@ -29,10 +29,11 @@ impl UserGuard {
 #[async_trait::async_trait]
 impl Guard for UserGuard {
     async fn check(&self, ctx: &Context<'_>) -> Result<()> {
-        let token = ctx.data::<ApiKey>()
+        let token = ctx
+            .data::<ApiKey>()
             .map_err(|_| anyhow!("Could not get api token from user"))?;
         if token.0 == "test123" && self.role == UserRole::Admin {
-            return Ok(())
+            return Ok(());
         }
         Err(async_graphql::Error::new("Invalid user token"))
     }
@@ -53,13 +54,14 @@ impl ClientGuard {
 impl Guard for ClientGuard {
     async fn check(&self, ctx: &Context<'_>) -> Result<()> {
         let mut db = get_db_connection(ctx)?;
-        let token = ctx.data::<ApiKey>()
+        let token = ctx
+            .data::<ApiKey>()
             .map_err(|_| anyhow!("Could not get api token from user"))?;
         if let Ok(c) = Token::get_client_for_token(&token.0, &mut db) {
             if c.id != self.id {
                 return Err(async_graphql::Error::new("Invalid token"));
             }
-            return Ok(())
+            return Ok(());
         }
 
         Err(async_graphql::Error::new("Invalid token"))
@@ -80,13 +82,14 @@ impl ServerGuard {
 impl Guard for ServerGuard {
     async fn check(&self, ctx: &Context<'_>) -> Result<()> {
         let mut db = get_db_connection(ctx)?;
-        let token = ctx.data::<ApiKey>()
+        let token = ctx
+            .data::<ApiKey>()
             .map_err(|_| anyhow!("Could not get api token from user"))?;
         if let Ok(s) = Token::get_server_for_token(&token.0, &mut db) {
             if s.id != self.id {
                 return Err(async_graphql::Error::new("Invalid token"));
             }
-            return Ok(())
+            return Ok(());
         }
 
         Err(async_graphql::Error::new("Invalid token"))

@@ -8,7 +8,7 @@ use libwgbuilder::models::Model;
 use libwgbuilder::models::Server as DbServer;
 use libwgbuilder::models::VpnIp as DbVpnIp;
 
-use crate::{schema::get_db_connection, auth::ServerGuard};
+use crate::{auth::ServerGuard, schema::get_db_connection};
 
 use super::vpn_ip::NewVpnIp;
 use super::Keypair;

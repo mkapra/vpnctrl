@@ -10,13 +10,13 @@ use libwgbuilder::models::vpn_ip::NewVpnIp;
 use libwgbuilder::models::vpn_network::NewVpnNetwork as NewDbVpnNetwork;
 
 use super::get_db_connection;
+use crate::auth::{UserGuard, UserRole};
 use crate::models::server::NewServer;
 use crate::models::Server;
 use crate::models::{
     client::NewClient, dns_server::NewDnsServer, vpn_network::NewVpnNetwork, Client, DnsServer,
     Keypair, VpnNetwork,
 };
-use crate::auth::{UserGuard, UserRole};
 
 pub struct Mutation;
 
