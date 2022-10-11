@@ -11,11 +11,13 @@ pub struct Mutation;
 
 #[Object]
 impl Mutation {
+    /// Generates a keypair
     async fn generate_keypair(&self, ctx: &Context<'_>) -> Result<Keypair> {
         let mut db = get_db_connection(ctx)?;
         Ok(Keypair::from(NewDbKeypair::generate(&mut db)?))
     }
 
+    /// Creates a DNS Server
     async fn new_dns_server(
         &self,
         ctx: &Context<'_>,
