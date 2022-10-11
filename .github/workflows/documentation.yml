@@ -3,7 +3,7 @@ name: Build Rust documentation and publish it with github pages
 on:
   push:
     branches:
-      - mkapra
+      - main
 
 jobs:
   documentation:
