@@ -18,6 +18,9 @@ pub use client::Client;
 pub mod server;
 pub use server::Server;
 
+pub mod token;
+pub use token::Token;
+
 pub trait Model {
     /// Finds the object for the given `search_id` in the database
     ///

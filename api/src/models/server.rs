@@ -8,7 +8,7 @@ use libwgbuilder::models::Model;
 use libwgbuilder::models::Server as DbServer;
 use libwgbuilder::models::VpnIp as DbVpnIp;
 
-use crate::schema::get_db_connection;
+use crate::{schema::get_db_connection, auth::ServerGuard};
 
 use super::vpn_ip::NewVpnIp;
 use super::Keypair;
@@ -21,8 +21,6 @@ pub struct Server {
     name: String,
     description: Option<String>,
     forward_interface: Option<String>,
-    //keypair_id: i32,
-    //vpn_ip_id: i32,
     external_ip: String,
 }
 
@@ -52,6 +50,7 @@ impl Server {
         Ok(VpnIp::from(DbVpnIp::find(client.vpn_ip_id, &mut db)?))
     }
 
+    #[graphql(guard = "ServerGuard::new(self.id)")]
     async fn configuration(&self, ctx: &Context<'_>) -> Result<String> {
         let mut db = get_db_connection(ctx)?;
         let client = DbClient::find(self.id, &mut db)?;

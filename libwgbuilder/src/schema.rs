@@ -42,6 +42,28 @@ diesel::table! {
 }
 
 diesel::table! {
+    tokens (id) {
+        id -> Int4,
+        token -> Text,
+        expires_at -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
+    tokens_clients (token_id, client_id) {
+        token_id -> Int4,
+        client_id -> Int4,
+    }
+}
+
+diesel::table! {
+    tokens_servers (token_id, server_id) {
+        token_id -> Int4,
+        server_id -> Int4,
+    }
+}
+
+diesel::table! {
     vpn_ips (id) {
         id -> Int4,
         address -> Varchar,
@@ -64,6 +86,10 @@ diesel::joinable!(clients -> keypairs (keypair_id));
 diesel::joinable!(clients -> vpn_ips (vpn_ip_id));
 diesel::joinable!(servers -> keypairs (keypair_id));
 diesel::joinable!(servers -> vpn_ips (vpn_ip_id));
+diesel::joinable!(tokens_clients -> clients (client_id));
+diesel::joinable!(tokens_clients -> tokens (token_id));
+diesel::joinable!(tokens_servers -> servers (server_id));
+diesel::joinable!(tokens_servers -> tokens (token_id));
 diesel::joinable!(vpn_ips -> vpn_networks (vpn_network_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
@@ -71,6 +97,9 @@ diesel::allow_tables_to_appear_in_same_query!(
     dns_servers,
     keypairs,
     servers,
+    tokens,
+    tokens_clients,
+    tokens_servers,
     vpn_ips,
     vpn_networks,
 );

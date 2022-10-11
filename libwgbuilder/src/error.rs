@@ -6,4 +6,6 @@ pub enum Error<'a> {
     Database,
     #[error("The {0} with id `{1}` was not found")]
     DatabaseObjectNotFound(&'a str, i32),
+    #[error("Unauthenticated")]
+    Unauthenticated
 }
