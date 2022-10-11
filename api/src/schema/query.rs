@@ -1,25 +1,14 @@
 //! Queries in the GraphQL schema
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use async_graphql::{Context, Object};
 use libwgbuilder::models::Model;
 
-use crate::database::{DatabaseConn, DatabaseConnection};
 use crate::models::Keypair;
 
-fn get_db_connection(ctx: &Context<'_>) -> Result<DatabaseConnection> {
-    ctx.data::<DatabaseConn>()
-        .map_err(|_| anyhow!("Could not get database connection from context"))?
-        .get()
-}
+use super::get_db_connection;
 
 /// The root of the query type
 pub struct QueryRoot;
-
-impl QueryRoot {
-    pub fn new() -> Self {
-        QueryRoot {}
-    }
-}
 
 #[Object]
 impl QueryRoot {

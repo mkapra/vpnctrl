@@ -1,21 +1,32 @@
 //! Holds all the necessary parts for the schema
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{EmptySubscription, Schema, Context};
+use anyhow::{Result, anyhow};
 
-use crate::database::DatabaseConn;
+use crate::database::{DatabaseConn, DatabaseConnection};
 
 mod query;
-pub use query::QueryRoot;
+use query::QueryRoot;
+mod mutation;
+use mutation::Mutation;
 
 /// GraphQL schema of the API
-pub type WireguardSchema = Schema<QueryRoot, EmptyMutation, EmptySubscription>;
+pub type WireguardSchema = Schema<QueryRoot, Mutation, EmptySubscription>;
+
+/// Returns a connection from the database pool
+///
+/// The pool is located in the context from async-graphql
+fn get_db_connection(ctx: &Context<'_>) -> Result<DatabaseConnection> {
+    ctx.data::<DatabaseConn>()
+        .map_err(|_| anyhow!("Could not get database connection from context"))?
+        .get()
+}
 
 /// Creates a schema and returns it
 ///
 /// # Arguments
 /// * `pool` - A connection to the database
 pub fn build_schema(pool: DatabaseConn) -> WireguardSchema {
-    Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+    Schema::build(QueryRoot, Mutation, EmptySubscription)
         .data(pool)
-        .data(QueryRoot::new())
         .finish()
 }
