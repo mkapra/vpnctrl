@@ -15,7 +15,7 @@ pub type WireguardSchema = Schema<QueryRoot, Mutation, EmptySubscription>;
 /// Returns a connection from the database pool
 ///
 /// The pool is located in the context from async-graphql
-fn get_db_connection(ctx: &Context<'_>) -> Result<DatabaseConnection> {
+pub fn get_db_connection(ctx: &Context<'_>) -> Result<DatabaseConnection> {
     ctx.data::<DatabaseConn>()
         .map_err(|_| anyhow!("Could not get database connection from context"))?
         .get()

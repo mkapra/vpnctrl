@@ -1,4 +1,4 @@
-use async_graphql::{SimpleObject, InputObject};
+use async_graphql::{InputObject, SimpleObject};
 
 use libwgbuilder::models::VpnNetwork as DbVpnNetwork;
 
@@ -13,7 +13,13 @@ pub struct VpnNetwork {
 
 impl From<DbVpnNetwork> for VpnNetwork {
     fn from(v: DbVpnNetwork) -> Self {
-        VpnNetwork { id: v.id, network: v.network, subnetmask: v.subnetmask, interface: v.interface, port: v.port }
+        VpnNetwork {
+            id: v.id,
+            network: v.network,
+            subnetmask: v.subnetmask,
+            interface: v.interface,
+            port: v.port,
+        }
     }
 }
 

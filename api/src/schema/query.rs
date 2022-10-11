@@ -3,7 +3,7 @@ use anyhow::Result;
 use async_graphql::{Context, Object};
 use libwgbuilder::models::Model;
 
-use crate::models::{DnsServer, Keypair, VpnNetwork};
+use crate::models::{DnsServer, Keypair, VpnIp, VpnNetwork};
 
 use super::get_db_connection;
 
@@ -31,5 +31,12 @@ impl QueryRoot {
         let mut db = get_db_connection(ctx)?;
         let vpn_network = libwgbuilder::models::VpnNetwork::find(id, &mut db)?;
         Ok(VpnNetwork::from(vpn_network))
+    }
+
+    /// Returns the requested VPN IP address
+    async fn vpn_ip(&self, ctx: &Context<'_>, id: i32) -> Result<VpnIp> {
+        let mut db = get_db_connection(ctx)?;
+        let vpn_ip = libwgbuilder::models::VpnIp::find(id, &mut db)?;
+        Ok(VpnIp::from(vpn_ip))
     }
 }

@@ -6,7 +6,9 @@ use libwgbuilder::models::keypair::NewKeypair as NewDbKeypair;
 use libwgbuilder::models::vpn_network::NewVpnNetwork as NewDbVpnNetwork;
 
 use super::get_db_connection;
-use crate::models::{dns_server::NewDnsServer, DnsServer, Keypair, vpn_network::NewVpnNetwork, VpnNetwork};
+use crate::models::{
+    dns_server::NewDnsServer, vpn_network::NewVpnNetwork, DnsServer, Keypair, VpnNetwork,
+};
 
 pub struct Mutation;
 
@@ -39,8 +41,13 @@ impl Mutation {
     ) -> Result<VpnNetwork> {
         let mut db = get_db_connection(ctx)?;
         Ok(VpnNetwork::from(
-            NewDbVpnNetwork::new(&vpn_network.network, vpn_network.subnetmask, vpn_network.interface, vpn_network.port)
-                .create(&mut db)?,
+            NewDbVpnNetwork::new(
+                &vpn_network.network,
+                vpn_network.subnetmask,
+                vpn_network.interface,
+                vpn_network.port,
+            )
+            .create(&mut db)?,
         ))
     }
 }
