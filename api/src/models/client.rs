@@ -1,7 +1,8 @@
 use anyhow::Result;
 use async_graphql::{ComplexObject, Context, InputObject, SimpleObject};
 use libwgbuilder::models::{
-    Client as DbClient, DnsServer as DbDnsServer, Keypair as DbKeypair, Model, VpnIp as DbVpnIp, AllowedIp,
+    AllowedIp, Client as DbClient, DnsServer as DbDnsServer, Keypair as DbKeypair, Model,
+    VpnIp as DbVpnIp,
 };
 
 use crate::schema::get_db_connection;
@@ -60,7 +61,8 @@ impl Client {
     async fn allowed_ips(&self, ctx: &Context<'_>) -> Result<Vec<String>> {
         let mut db = get_db_connection(ctx)?;
         let client = DbClient::find(self.id, &mut db)?;
-        AllowedIp::get_allowed_ips_for_client(&client, &mut db).map(|v| v.into_iter().map(|a| a.address).collect())
+        AllowedIp::get_allowed_ips_for_client(&client, &mut db)
+            .map(|v| v.into_iter().map(|a| a.address).collect())
     }
 }
 

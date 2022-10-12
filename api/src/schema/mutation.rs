@@ -9,8 +9,8 @@ use libwgbuilder::models::token::NewToken;
 use libwgbuilder::models::user::NewUser as NewDbUser;
 use libwgbuilder::models::vpn_ip::NewVpnIp;
 use libwgbuilder::models::vpn_network::NewVpnNetwork as NewDbVpnNetwork;
-use libwgbuilder::models::{User, Model};
 use libwgbuilder::models::AllowedIp as DbAllowedIp;
+use libwgbuilder::models::{Model, User};
 
 use super::get_db_connection;
 use crate::auth::{

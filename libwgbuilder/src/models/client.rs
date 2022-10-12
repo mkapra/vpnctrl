@@ -8,7 +8,11 @@ use diesel::{
 };
 use sailfish::TemplateOnce;
 
-use crate::{models::{Server, AllowedIp}, schema::clients, Error};
+use crate::{
+    models::{AllowedIp, Server},
+    schema::clients,
+    Error,
+};
 
 use super::{DnsServer, Keypair, Model, VpnIp, VpnNetwork};
 
@@ -69,7 +73,11 @@ impl Client {
                     .context("Could not get server from database")
             })?;
         let server_keypair = Keypair::find(server.keypair_id, conn)?;
-        let allowed_ips = AllowedIp::get_allowed_ips_for_client(&self, conn)?.into_iter().map(|e| e.address).collect::<Vec<String>>().join(", ");
+        let allowed_ips = AllowedIp::get_allowed_ips_for_client(&self, conn)?
+            .into_iter()
+            .map(|e| e.address)
+            .collect::<Vec<String>>()
+            .join(", ");
 
         let ctx = ClientConfig {
             private_key: keypair.private_key,
