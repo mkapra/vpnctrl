@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["api","libwgbuilder"];
+window.ALL_CRATES = ["api","client","libwgbuilder"];

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["server_configuration",""]],"struct":[["ServerConfiguration",""]]};

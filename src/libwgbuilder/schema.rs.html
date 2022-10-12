@@ -113,7 +113,41 @@
 <span id="113">113</span>
 <span id="114">114</span>
 <span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
 </pre><pre class="rust"><code><span class="comment">// @generated automatically by Diesel CLI.</span>
+
+<span class="macro">diesel::table!</span> {
+    <span class="ident">allowed_ips</span> (<span class="ident">id</span>) {
+        <span class="ident">id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">address</span> -&gt; <span class="ident">Varchar</span>,
+    }
+}
+
+<span class="macro">diesel::table!</span> {
+    <span class="ident">allowed_ips_clients</span> (<span class="ident">id</span>) {
+        <span class="ident">id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">allowed_ip_id</span> -&gt; <span class="ident">Int4</span>,
+        <span class="ident">client_id</span> -&gt; <span class="ident">Int4</span>,
+    }
+}
 
 <span class="macro">diesel::table!</span> {
     <span class="ident">clients</span> (<span class="ident">id</span>) {
@@ -205,6 +239,8 @@
     }
 }
 
+<span class="macro">diesel::joinable!</span>(<span class="ident">allowed_ips_clients</span> -&gt; <span class="ident">allowed_ips</span> (<span class="ident">allowed_ip_id</span>));
+<span class="macro">diesel::joinable!</span>(<span class="ident">allowed_ips_clients</span> -&gt; <span class="ident">clients</span> (<span class="ident">client_id</span>));
 <span class="macro">diesel::joinable!</span>(<span class="ident">clients</span> -&gt; <span class="ident">dns_servers</span> (<span class="ident">dns_server_id</span>));
 <span class="macro">diesel::joinable!</span>(<span class="ident">clients</span> -&gt; <span class="ident">keypairs</span> (<span class="ident">keypair_id</span>));
 <span class="macro">diesel::joinable!</span>(<span class="ident">clients</span> -&gt; <span class="ident">vpn_ips</span> (<span class="ident">vpn_ip_id</span>));
@@ -217,6 +253,8 @@
 <span class="macro">diesel::joinable!</span>(<span class="ident">vpn_ips</span> -&gt; <span class="ident">vpn_networks</span> (<span class="ident">vpn_network_id</span>));
 
 <span class="macro">diesel::allow_tables_to_appear_in_same_query!</span>(
+    <span class="ident">allowed_ips</span>,
+    <span class="ident">allowed_ips_clients</span>,
     <span class="ident">clients</span>,
     <span class="ident">dns_servers</span>,
     <span class="ident">keypairs</span>,

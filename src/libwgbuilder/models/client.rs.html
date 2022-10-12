@@ -143,6 +143,20 @@
 <span id="143">143</span>
 <span id="144">144</span>
 <span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Client model</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A client is a device in the VPN network.</span>
@@ -153,7 +167,11 @@
 };
 <span class="kw">use</span> <span class="ident">sailfish::TemplateOnce</span>;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">models::Server</span>, <span class="ident">schema::clients</span>, <span class="ident">Error</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">models</span>::{<span class="ident">AllowedIp</span>, <span class="ident">Server</span>},
+    <span class="ident">schema::clients</span>,
+    <span class="ident">Error</span>,
+};
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">DnsServer</span>, <span class="ident">Keypair</span>, <span class="ident">Model</span>, <span class="ident">VpnIp</span>, <span class="ident">VpnNetwork</span>};
 
@@ -214,6 +232,11 @@
                     .<span class="ident">context</span>(<span class="string">&quot;Could not get server from database&quot;</span>)
             })<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">server_keypair</span> <span class="op">=</span> <span class="ident">Keypair::find</span>(<span class="ident">server</span>.<span class="ident">keypair_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">allowed_ips</span> <span class="op">=</span> <span class="ident">AllowedIp::get_allowed_ips_for_client</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">address</span>)
+            .<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">join</span>(<span class="string">&quot;, &quot;</span>);
 
         <span class="kw">let</span> <span class="ident">ctx</span> <span class="op">=</span> <span class="ident">ClientConfig</span> {
             <span class="ident">private_key</span>: <span class="ident">keypair</span>.<span class="ident">private_key</span>,
@@ -224,6 +247,10 @@
             <span class="ident">endpoint_address</span>: <span class="ident">server</span>.<span class="ident">external_ip</span>,
             <span class="ident">endpoint_port</span>: <span class="ident">vpn_network</span>.<span class="ident">port</span>,
             <span class="ident">keepalive</span>: <span class="self">self</span>.<span class="ident">keepalive</span>,
+            <span class="ident">allowed_ips</span>: <span class="kw">match</span> <span class="ident">allowed_ips</span>.<span class="ident">is_empty</span>() {
+                <span class="bool-val">true</span> =&gt; <span class="string">&quot;0.0.0.0/0&quot;</span>.<span class="ident">to_string</span>(),
+                <span class="bool-val">false</span> =&gt; <span class="ident">allowed_ips</span>,
+            },
         };
         <span class="ident">ctx</span>.<span class="ident">render_once</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
             <span class="ident">anyhow::Error::from</span>(<span class="ident">e</span>).<span class="ident">context</span>(<span class="string">&quot;Could not create configuration for client&quot;</span>)
@@ -242,6 +269,7 @@
     <span class="ident">endpoint_address</span>: <span class="ident">String</span>,
     <span class="ident">endpoint_port</span>: <span class="ident">i32</span>,
     <span class="ident">keepalive</span>: <span class="ident">i32</span>,
+    <span class="ident">allowed_ips</span>: <span class="ident">String</span>,
 }
 
 <span class="doccomment">/// Client that is not created in the database yet</span>
