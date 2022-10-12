@@ -16,7 +16,7 @@ jobs:
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
       - name: Build Rust documentation
         run: cargo doc --no-deps
       - name: Copy index.html to docs

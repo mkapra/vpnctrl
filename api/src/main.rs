@@ -6,7 +6,7 @@ use database::DatabaseConn;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use rocket::{
     get,
-    http::Status,
+    http::{Method, Status},
     launch, post,
     request::Outcome,
     request::{self, FromRequest},
@@ -15,6 +15,7 @@ use rocket::{
 };
 
 mod schema;
+use rocket_cors::AllowedHeaders;
 use schema::{build_schema, WireguardSchema};
 
 mod auth;
@@ -62,7 +63,23 @@ fn launch() -> _ {
     db.run_pending_migrations(MIGRATIONS)
         .expect("Could not run migrations");
 
+    // Init rocket_cors CORS
+    let allowed_origins = rocket_cors::AllowedOrigins::all();
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Get, Method::Post]
+            .into_iter()
+            .map(From::from)
+            .collect(),
+        allowed_headers: AllowedHeaders::some(&["Token", "Accept"]),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("Could not build CORS");
+
     rocket::build()
         .manage(schema)
         .mount("/", routes![graphql_request, graphiql])
+        .attach(cors)
 }
