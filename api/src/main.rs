@@ -1,5 +1,5 @@
 use async_graphql::http::GraphiQLSource;
-use async_graphql_rocket::{GraphQLQuery, GraphQLRequest, GraphQLResponse};
+use async_graphql_rocket::{GraphQLRequest, GraphQLResponse};
 use database::DatabaseConn;
 use rocket::{get, launch, post, response::content, routes, State};
 
@@ -9,7 +9,7 @@ use schema::{build_schema, WireguardSchema};
 mod auth;
 mod database;
 mod models;
-use auth::ApiKey;
+use auth::{jwt::Secret, ApiKey};
 
 #[get("/")]
 fn graphiql() -> content::RawHtml<String> {
@@ -28,8 +28,9 @@ async fn graphql_request(
 #[launch]
 fn launch() -> _ {
     let url = "postgres://localhost/wgbuilder";
+    let secret = "123123";
     let pool = DatabaseConn::new(url).expect("Could not build database connection pool");
-    let schema = build_schema(pool);
+    let schema = build_schema(pool, Secret::new(secret));
 
     rocket::build()
         .manage(schema)

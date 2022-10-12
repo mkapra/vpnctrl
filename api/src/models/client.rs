@@ -4,10 +4,7 @@ use libwgbuilder::models::{
     Client as DbClient, DnsServer as DbDnsServer, Keypair as DbKeypair, Model, VpnIp as DbVpnIp,
 };
 
-use crate::{
-    auth::{ClientGuard, UserGuard},
-    schema::get_db_connection,
-};
+use crate::schema::get_db_connection;
 
 use super::{vpn_ip::NewVpnIp, DnsServer, Keypair, VpnIp};
 

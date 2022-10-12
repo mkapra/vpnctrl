@@ -2,7 +2,6 @@ use anyhow::anyhow;
 use async_graphql::{async_trait, Context, Guard, Result};
 use libwgbuilder::models::Token;
 use rocket::{
-    http::Status,
     outcome::Outcome,
     request::{self, FromRequest},
     Request,
@@ -10,31 +9,29 @@ use rocket::{
 
 use crate::schema::get_db_connection;
 
-#[derive(Debug, PartialEq, Eq)]
-pub enum UserRole {
-    Admin,
-    Client,
-}
+/// This guard protects all endpoints that should only be accessible by an administrator
+pub struct AdminGuard;
 
-pub struct UserGuard {
-    role: UserRole,
-}
-
-impl UserGuard {
-    pub fn new(role: UserRole) -> Self {
-        UserGuard { role }
+impl AdminGuard {
+    pub fn new() -> Self {
+        AdminGuard {}
     }
 }
 
 #[async_trait::async_trait]
-impl Guard for UserGuard {
+impl Guard for AdminGuard {
     async fn check(&self, ctx: &Context<'_>) -> Result<()> {
         let token = ctx
             .data::<ApiKey>()
-            .map_err(|_| anyhow!("Could not get api token from user"))?;
-        if token.0 == "test123" && self.role == UserRole::Admin {
+            .map_err(|_| anyhow!("Could not get api key from user"))?;
+        let secret = ctx
+            .data::<jwt::Secret>()
+            .map_err(|_| anyhow!("Could not get secret key"))?;
+
+        if jwt::valid_token(&token.0, &secret.0) {
             return Ok(());
         }
+
         Err(async_graphql::Error::new("Invalid user token"))
     }
 }
@@ -107,7 +104,66 @@ impl<'r> FromRequest<'r> for ApiKey {
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
         match request.headers().get_one("Token") {
             Some(token) => Outcome::Success(ApiKey(token.to_string())),
-            None => Outcome::Failure((Status::Forbidden, ())),
+            _ => Outcome::Success(ApiKey("".to_string())),
         }
+    }
+}
+
+pub mod jwt {
+    use chrono::{Duration, Utc};
+    use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+    use serde::{Deserialize, Serialize};
+
+    /// Used to store the secret for enrcypting/signing the JWT token
+    pub struct Secret(pub String);
+
+    impl Secret {
+        pub fn new(secret: &str) -> Self {
+            Secret(secret.to_owned())
+        }
+    }
+
+    /// Claims for a JWT
+    #[derive(Debug, Serialize, Deserialize)]
+    pub struct Claims {
+        pub sub: String,
+        pub role: i32,
+        pub exp: usize,
+    }
+
+    impl Claims {
+        /// Creates a new claim with a expiration time of 10 minutes
+        pub fn new(username: String, role: i32) -> Self {
+            let expiration_time = Utc::now()
+                .checked_add_signed(Duration::minutes(10))
+                .expect("invalid timestamp")
+                .timestamp();
+            Claims {
+                sub: username,
+                role,
+                exp: expiration_time as usize,
+            }
+        }
+    }
+
+    /// Generates a JWT for the given claims
+    pub fn encode_jwt(claims: &Claims, secret: &str) -> anyhow::Result<String> {
+        encode(
+            &Header::default(),
+            claims,
+            &EncodingKey::from_secret(secret.as_bytes()),
+        )
+        .map_err(|e| anyhow::Error::from(e).context("Could not generate token for user"))
+    }
+
+    /// Validates a JWT token
+    pub fn valid_token(token: &str, secret: &str) -> bool {
+        decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(secret.as_bytes()),
+            &Validation::new(Algorithm::default()),
+        )
+        .map(|_| true)
+        .unwrap_or_else(|_| false)
     }
 }

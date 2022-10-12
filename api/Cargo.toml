@@ -12,3 +12,7 @@ async-graphql-rocket = "4.0.15"
 libwgbuilder = { path = "../libwgbuilder" }
 diesel = { version = "2.0.1", features = ["r2d2"] }
 anyhow = "1.0.65"
+bcrypt = "0.13"
+jsonwebtoken = "8"
+serde = {version = "1.0", features = ["derive"] }
+chrono = "0.4.19"

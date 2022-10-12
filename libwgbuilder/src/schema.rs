@@ -64,6 +64,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    users (id) {
+        id -> Int4,
+        username -> Varchar,
+        password -> Varchar,
+        role -> Int4,
+    }
+}
+
+diesel::table! {
     vpn_ips (id) {
         id -> Int4,
         address -> Varchar,
@@ -100,6 +109,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     tokens,
     tokens_clients,
     tokens_servers,
+    users,
     vpn_ips,
     vpn_networks,
 );
