@@ -7,6 +7,8 @@
 <span id="7">7</span>
 <span id="8">8</span>
 <span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
@@ -15,6 +17,8 @@
     <span class="ident">Database</span>,
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The {0} with id `{1}` was not found&quot;</span>)]</span>
     <span class="ident">DatabaseObjectNotFound</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="ident">i32</span>),
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Unauthenticated&quot;</span>)]</span>
+    <span class="ident">Unauthenticated</span>,
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="libwgbuilder" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>

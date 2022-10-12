@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["jwt",""]],"struct":[["AdminGuard","This guard protects all endpoints that should only be accessible by an administrator"],["ApiKey","Holds the API key from the `Token` header"],["ClientGuard","This guard protects the configuration attribute of the client"],["ServerGuard",""]]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["NewUser","User that is not created in the database yet"],["User","User from the database"]]};

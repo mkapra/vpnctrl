@@ -67,7 +67,6 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
-<span id="70">70</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">anyhow::Result</span>;
 <span class="kw">use</span> <span class="ident">async_graphql::Context</span>;
 <span class="kw">use</span> <span class="ident">async_graphql::InputObject</span>;
@@ -78,7 +77,7 @@
 <span class="kw">use</span> <span class="ident">libwgbuilder::models::Server</span> <span class="kw">as</span> <span class="ident">DbServer</span>;
 <span class="kw">use</span> <span class="ident">libwgbuilder::models::VpnIp</span> <span class="kw">as</span> <span class="ident">DbVpnIp</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::schema::get_db_connection</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">auth::ServerGuard</span>, <span class="ident">schema::get_db_connection</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::vpn_ip::NewVpnIp</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Keypair</span>;
@@ -91,8 +90,6 @@
     <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">forward_interface</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="comment">//keypair_id: i32,</span>
-    <span class="comment">//vpn_ip_id: i32,</span>
     <span class="ident">external_ip</span>: <span class="ident">String</span>,
 }
 
@@ -122,6 +119,7 @@
         <span class="prelude-val">Ok</span>(<span class="ident">VpnIp::from</span>(<span class="ident">DbVpnIp::find</span>(<span class="ident">client</span>.<span class="ident">vpn_ip_id</span>, <span class="kw-2">&amp;mut</span> <span class="ident">db</span>)<span class="question-mark">?</span>))
     }
 
+    <span class="attribute">#[<span class="ident">graphql</span>(<span class="ident">guard</span> <span class="op">=</span> <span class="string">&quot;ServerGuard::new(self.id)&quot;</span>)]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">configuration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">get_db_connection</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">DbClient::find</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="kw-2">&amp;mut</span> <span class="ident">db</span>)<span class="question-mark">?</span>;

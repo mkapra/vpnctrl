@@ -30,11 +30,19 @@
 <span id="30">30</span>
 <span id="31">31</span>
 <span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Holds all the necessary parts for the schema</span>
 <span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">anyhow</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">async_graphql</span>::{<span class="ident">Context</span>, <span class="ident">EmptySubscription</span>, <span class="ident">Schema</span>};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::database</span>::{<span class="ident">DatabaseConn</span>, <span class="ident">DatabaseConnection</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">auth::jwt::Secret</span>,
+    <span class="ident">database</span>::{<span class="ident">DatabaseConn</span>, <span class="ident">DatabaseConnection</span>},
+};
 
 <span class="kw">mod</span> <span class="ident">query</span>;
 <span class="kw">use</span> <span class="ident">query::QueryRoot</span>;
@@ -57,9 +65,11 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Arguments</span>
 <span class="doccomment">/// * `pool` - A connection to the database</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_schema</span>(<span class="ident">pool</span>: <span class="ident">DatabaseConn</span>) -&gt; <span class="ident">WireguardSchema</span> {
+<span class="doccomment">/// * `secret` - The secret is used to encryt/decrypt/sign/verify the JWT tokens</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_schema</span>(<span class="ident">pool</span>: <span class="ident">DatabaseConn</span>, <span class="ident">secret</span>: <span class="ident">Secret</span>) -&gt; <span class="ident">WireguardSchema</span> {
     <span class="ident">Schema::build</span>(<span class="ident">QueryRoot</span>, <span class="ident">Mutation</span>, <span class="ident">EmptySubscription</span>)
         .<span class="ident">data</span>(<span class="ident">pool</span>)
+        .<span class="ident">data</span>(<span class="ident">secret</span>)
         .<span class="ident">finish</span>()
 }
 </code></pre></div>

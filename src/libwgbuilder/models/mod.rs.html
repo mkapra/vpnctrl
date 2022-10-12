@@ -27,6 +27,12 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">diesel::PgConnection</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">keypair</span>;
@@ -46,6 +52,12 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">server</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">server::Server</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">token</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">token::Token</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">user</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">user::User</span>;
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Model</span> {
     <span class="doccomment">/// Finds the object for the given `search_id` in the database</span>
