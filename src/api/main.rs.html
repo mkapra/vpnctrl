@@ -66,6 +66,23 @@
 <span id="66">66</span>
 <span id="67">67</span>
 <span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::env</span>;
 
 <span class="kw">use</span> <span class="ident">async_graphql::http::GraphiQLSource</span>;
@@ -74,7 +91,7 @@
 <span class="kw">use</span> <span class="ident">diesel_migrations</span>::{<span class="ident">embed_migrations</span>, <span class="ident">EmbeddedMigrations</span>, <span class="ident">MigrationHarness</span>};
 <span class="kw">use</span> <span class="ident">rocket</span>::{
     <span class="ident">get</span>,
-    <span class="ident">http::Status</span>,
+    <span class="ident">http</span>::{<span class="ident">Method</span>, <span class="ident">Status</span>},
     <span class="ident">launch</span>, <span class="ident">post</span>,
     <span class="ident">request::Outcome</span>,
     <span class="ident">request</span>::{<span class="self">self</span>, <span class="ident">FromRequest</span>},
@@ -83,6 +100,7 @@
 };
 
 <span class="kw">mod</span> <span class="ident">schema</span>;
+<span class="kw">use</span> <span class="ident">rocket_cors::AllowedHeaders</span>;
 <span class="kw">use</span> <span class="ident">schema</span>::{<span class="ident">build_schema</span>, <span class="ident">WireguardSchema</span>};
 
 <span class="kw">mod</span> <span class="ident">auth</span>;
@@ -130,9 +148,25 @@
     <span class="ident">db</span>.<span class="ident">run_pending_migrations</span>(<span class="ident">MIGRATIONS</span>)
         .<span class="ident">expect</span>(<span class="string">&quot;Could not run migrations&quot;</span>);
 
+    <span class="comment">// Init rocket_cors CORS</span>
+    <span class="kw">let</span> <span class="ident">allowed_origins</span> <span class="op">=</span> <span class="ident">rocket_cors::AllowedOrigins::all</span>();
+    <span class="kw">let</span> <span class="ident">cors</span> <span class="op">=</span> <span class="ident">rocket_cors::CorsOptions</span> {
+        <span class="ident">allowed_origins</span>,
+        <span class="ident">allowed_methods</span>: <span class="macro">vec!</span>[<span class="ident">Method::Get</span>, <span class="ident">Method::Post</span>]
+            .<span class="ident">into_iter</span>()
+            .<span class="ident">map</span>(<span class="ident">From::from</span>)
+            .<span class="ident">collect</span>(),
+        <span class="ident">allowed_headers</span>: <span class="ident">AllowedHeaders::some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;Token&quot;</span>, <span class="string">&quot;Accept&quot;</span>]),
+        <span class="ident">allow_credentials</span>: <span class="bool-val">true</span>,
+        ..<span class="ident">Default::default</span>()
+    }
+    .<span class="ident">to_cors</span>()
+    .<span class="ident">expect</span>(<span class="string">&quot;Could not build CORS&quot;</span>);
+
     <span class="ident">rocket::build</span>()
         .<span class="ident">manage</span>(<span class="ident">schema</span>)
         .<span class="ident">mount</span>(<span class="string">&quot;/&quot;</span>, <span class="macro">routes!</span>[<span class="ident">graphql_request</span>, <span class="ident">graphiql</span>])
+        .<span class="ident">attach</span>(<span class="ident">cors</span>)
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="api" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0 (a55dd71d5 2022-09-19)" ></div></body></html>
