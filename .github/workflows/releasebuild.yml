@@ -1,7 +1,6 @@
 on: push
 name: Release Build
 jobs:
-  # Release build on Linux and macOS
   release:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -20,4 +19,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: vpnctrl-client-${{ matrix.os }}
-          path: target/release
+          path: target/release/client
