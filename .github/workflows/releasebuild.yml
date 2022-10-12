@@ -1,0 +1,23 @@
+on: push
+name: Release Build
+jobs:
+  # Release build on Linux and macOS
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - uses: actions/upload-artifact@v1
+        with:
+          name: vpnctrl-client-${{ matrix.os }}
+          path: target/release
