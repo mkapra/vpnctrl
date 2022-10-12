@@ -27,6 +27,25 @@ impl User {
                 anyhow::Error::from(e).context(Error::DatabaseObjectNotFound("username", 0))
             })
     }
+
+    /// Updates the password for the given user
+    ///
+    /// # Returns
+    /// The updated version of the user
+    pub fn update_password(self, new_password: &str, conn: &mut PgConnection) -> Result<Self> {
+        let hashed_password = bcrypt::hash(new_password, 8)
+            .map_err(|e| anyhow::Error::from(e).context("Could not hash new password"))?;
+
+        use crate::schema::users::{self, dsl::*};
+        diesel::update(users::table)
+            .set(password.eq(hashed_password))
+            .get_result::<Self>(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not update new user password in database")
+            })
+    }
 }
 
 /// User that is not created in the database yet

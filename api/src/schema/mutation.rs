@@ -157,4 +157,23 @@ impl Mutation {
 
         encode_jwt(&Claims::new(user.username, user.role), "123123")
     }
+
+    /// Changes the password for the given username
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn change_password(
+        &self,
+        ctx: &Context<'_>,
+        username: String,
+        old_password: String,
+        new_password: String,
+    ) -> Result<bool> {
+        let mut db = get_db_connection(ctx)?;
+        let user = User::find_by_username(&username, &mut db)?;
+
+        if bcrypt::verify(&old_password, &user.password)? {
+            user.update_password(&new_password, &mut db)?;
+        }
+
+        bail!("Invalid password")
+    }
 }
