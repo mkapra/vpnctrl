@@ -102,8 +102,8 @@ impl<'r> FromRequest<'r> for ApiKey {
     type Error = ();
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
-        match request.headers().get_one("Token") {
-            Some(token) => Outcome::Success(ApiKey(token.to_string())),
+        match request.headers().get_one("Authorization") {
+            Some(token) => Outcome::Success(ApiKey(token.split(" ").last().unwrap().to_string())),
             _ => Outcome::Success(ApiKey("".to_string())),
         }
     }
