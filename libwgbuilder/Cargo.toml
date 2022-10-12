@@ -13,3 +13,4 @@ anyhow = "1.0.65"
 sailfish = { git = "https://github.com/mkapra/sailfish"}
 chrono = "0.4"
 uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
+bcrypt = "0.13"

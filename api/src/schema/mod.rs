@@ -2,7 +2,10 @@
 use anyhow::{anyhow, Result};
 use async_graphql::{Context, EmptySubscription, Schema};
 
-use crate::database::{DatabaseConn, DatabaseConnection};
+use crate::{
+    auth::jwt::Secret,
+    database::{DatabaseConn, DatabaseConnection},
+};
 
 mod query;
 use query::QueryRoot;
@@ -25,8 +28,10 @@ pub fn get_db_connection(ctx: &Context<'_>) -> Result<DatabaseConnection> {
 ///
 /// # Arguments
 /// * `pool` - A connection to the database
-pub fn build_schema(pool: DatabaseConn) -> WireguardSchema {
+/// * `secret` - The secret is used to encryt/decrypt/sign/verify the JWT tokens
+pub fn build_schema(pool: DatabaseConn, secret: Secret) -> WireguardSchema {
     Schema::build(QueryRoot, Mutation, EmptySubscription)
         .data(pool)
+        .data(secret)
         .finish()
 }

@@ -3,7 +3,10 @@ use anyhow::Result;
 use async_graphql::{Context, Object};
 use libwgbuilder::models::Model;
 
-use crate::models::{Client, DnsServer, Keypair, Server, VpnIp, VpnNetwork};
+use crate::{
+    auth::{AdminGuard, ClientGuard, ServerGuard},
+    models::{Client, DnsServer, Keypair, Server, VpnIp, VpnNetwork},
+};
 
 use super::get_db_connection;
 
@@ -13,6 +16,7 @@ pub struct QueryRoot;
 #[Object]
 impl QueryRoot {
     /// Returns the requested keypair
+    #[graphql(guard = "AdminGuard::new()")]
     async fn keypair(&self, ctx: &Context<'_>, id: i32) -> Result<Keypair> {
         let mut db = get_db_connection(ctx)?;
         let keypair = libwgbuilder::models::Keypair::find(id, &mut db)?;
@@ -20,6 +24,7 @@ impl QueryRoot {
     }
 
     /// Returns the requested dns server
+    #[graphql(guard = "AdminGuard::new()")]
     async fn dns_server(&self, ctx: &Context<'_>, id: i32) -> Result<DnsServer> {
         let mut db = get_db_connection(ctx)?;
         let dns_server = libwgbuilder::models::DnsServer::find(id, &mut db)?;
@@ -27,6 +32,7 @@ impl QueryRoot {
     }
 
     /// Returns the requested VPN network
+    #[graphql(guard = "AdminGuard::new()")]
     async fn vpn_network(&self, ctx: &Context<'_>, id: i32) -> Result<VpnNetwork> {
         let mut db = get_db_connection(ctx)?;
         let vpn_network = libwgbuilder::models::VpnNetwork::find(id, &mut db)?;
@@ -34,6 +40,7 @@ impl QueryRoot {
     }
 
     /// Returns the requested VPN IP address
+    #[graphql(guard = "AdminGuard::new()")]
     async fn vpn_ip(&self, ctx: &Context<'_>, id: i32) -> Result<VpnIp> {
         let mut db = get_db_connection(ctx)?;
         let vpn_ip = libwgbuilder::models::VpnIp::find(id, &mut db)?;
@@ -41,6 +48,7 @@ impl QueryRoot {
     }
 
     /// Returns the requested client
+    #[graphql(guard = "AdminGuard::new().or(ClientGuard::new(id))")]
     async fn client(&self, ctx: &Context<'_>, id: i32) -> Result<Client> {
         let mut db = get_db_connection(ctx)?;
         let client = libwgbuilder::models::Client::find(id, &mut db)?;
@@ -48,6 +56,7 @@ impl QueryRoot {
     }
 
     /// Returns the requested server
+    #[graphql(guard = "AdminGuard::new().or(ServerGuard::new(id))")]
     async fn server(&self, ctx: &Context<'_>, id: i32) -> Result<Server> {
         let mut db = get_db_connection(ctx)?;
         let server = libwgbuilder::models::Server::find(id, &mut db)?;
