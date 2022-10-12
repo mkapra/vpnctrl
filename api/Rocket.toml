@@ -7,14 +7,6 @@ port = 8000
 keep_alive = 5
 log_level = "normal"
 
-
-[staging]
-address = "0.0.0.0"
-port = 8080
-keep_alive = 5
-log_level = "normal"
-
-
 [release]
 address = "0.0.0.0"
 port = 8080
