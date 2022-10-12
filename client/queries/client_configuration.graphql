@@ -1,0 +1,5 @@
+query ClientConfiguration($clientId: Int!) {
+  client(id: $clientId) {
+    configuration
+  }
+}

@@ -1,0 +1,17 @@
+[package]
+name = "client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+graphql_client = "0.11"
+tokio = { version = "1.21", features = ["rt-multi-thread", "macros"] }
+reqwest = { version = "0.11", features = ["json"] }
+serde = {version = "1.0", features = ["derive"] }
+confy = "0.5"
+once_cell = "1.15"
+clap = { version = "4.0", features = ["derive"] }
+anyhow = "1.0"
+md-5 = "0.10.5"
