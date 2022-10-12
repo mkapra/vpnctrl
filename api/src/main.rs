@@ -3,7 +3,16 @@ use std::env;
 use async_graphql::http::GraphiQLSource;
 use async_graphql_rocket::{GraphQLRequest, GraphQLResponse};
 use database::DatabaseConn;
-use rocket::{get, launch, post, response::content, routes, State};
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use rocket::{
+    get,
+    http::Status,
+    launch, post,
+    request::Outcome,
+    request::{self, FromRequest},
+    response::content,
+    routes, Request, State,
+};
 
 mod schema;
 use schema::{build_schema, WireguardSchema};
@@ -13,8 +22,24 @@ mod database;
 mod models;
 use auth::{jwt::Secret, ApiKey};
 
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("../libwgbuilder/migrations/");
+
+pub struct SkipGraphiQL;
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for SkipGraphiQL {
+    type Error = anyhow::Error;
+
+    async fn from_request(_: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+        match cfg!(debug_assertions) {
+            true => Outcome::Success(SkipGraphiQL {}),
+            false => Outcome::Failure((Status::NotFound, anyhow::anyhow!("Not found"))),
+        }
+    }
+}
+
 #[get("/")]
-fn graphiql() -> content::RawHtml<String> {
+fn graphiql(_skip_graphiql: SkipGraphiQL) -> content::RawHtml<String> {
     content::RawHtml(GraphiQLSource::build().endpoint("/graphql").finish())
 }
 
@@ -32,7 +57,10 @@ fn launch() -> _ {
     let url = env::var("DATABASE_URL").expect("Could not find DATABASE_URL");
     let secret = env::var("SECRET").expect("Could not find SECRET for JWT tokens");
     let pool = DatabaseConn::new(&url).expect("Could not build database connection pool");
+    let mut db = pool.get().expect("Could not get database connection");
     let schema = build_schema(pool, Secret::new(&secret));
+    db.run_pending_migrations(MIGRATIONS)
+        .expect("Could not run migrations");
 
     rocket::build()
         .manage(schema)
