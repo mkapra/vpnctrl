@@ -271,8 +271,8 @@
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
 
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">from_request</span>(<span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r</span> <span class="ident">Request</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">request::Outcome</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">headers</span>().<span class="ident">get_one</span>(<span class="string">&quot;Token&quot;</span>) {
-            <span class="prelude-val">Some</span>(<span class="ident">token</span>) =&gt; <span class="ident">Outcome::Success</span>(<span class="ident">ApiKey</span>(<span class="ident">token</span>.<span class="ident">to_string</span>())),
+        <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">headers</span>().<span class="ident">get_one</span>(<span class="string">&quot;Authorization&quot;</span>) {
+            <span class="prelude-val">Some</span>(<span class="ident">token</span>) =&gt; <span class="ident">Outcome::Success</span>(<span class="ident">ApiKey</span>(<span class="ident">token</span>.<span class="ident">split</span>(<span class="string">&quot; &quot;</span>).<span class="ident">last</span>().<span class="ident">unwrap</span>().<span class="ident">to_string</span>())),
             <span class="kw">_</span> =&gt; <span class="ident">Outcome::Success</span>(<span class="ident">ApiKey</span>(<span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>())),
         }
     }
