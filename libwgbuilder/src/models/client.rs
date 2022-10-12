@@ -8,7 +8,7 @@ use diesel::{
 };
 use sailfish::TemplateOnce;
 
-use crate::{models::Server, schema::clients, Error};
+use crate::{models::{Server, AllowedIp}, schema::clients, Error};
 
 use super::{DnsServer, Keypair, Model, VpnIp, VpnNetwork};
 
@@ -69,6 +69,7 @@ impl Client {
                     .context("Could not get server from database")
             })?;
         let server_keypair = Keypair::find(server.keypair_id, conn)?;
+        let allowed_ips = AllowedIp::get_allowed_ips_for_client(&self, conn)?.into_iter().map(|e| e.address).collect::<Vec<String>>().join(", ");
 
         let ctx = ClientConfig {
             private_key: keypair.private_key,
@@ -79,6 +80,10 @@ impl Client {
             endpoint_address: server.external_ip,
             endpoint_port: vpn_network.port,
             keepalive: self.keepalive,
+            allowed_ips: match allowed_ips.is_empty() {
+                true => "0.0.0.0/0".to_string(),
+                false => allowed_ips,
+            },
         };
         ctx.render_once().map_err(|e| {
             anyhow::Error::from(e).context("Could not create configuration for client")
@@ -97,6 +102,7 @@ struct ClientConfig {
     endpoint_address: String,
     endpoint_port: i32,
     keepalive: i32,
+    allowed_ips: String,
 }
 
 /// Client that is not created in the database yet

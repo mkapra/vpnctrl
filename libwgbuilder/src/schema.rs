@@ -1,6 +1,21 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    allowed_ips (id) {
+        id -> Int4,
+        address -> Varchar,
+    }
+}
+
+diesel::table! {
+    allowed_ips_clients (id) {
+        id -> Int4,
+        allowed_ip_id -> Int4,
+        client_id -> Int4,
+    }
+}
+
+diesel::table! {
     clients (id) {
         id -> Int4,
         name -> Varchar,
@@ -90,6 +105,8 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(allowed_ips_clients -> allowed_ips (allowed_ip_id));
+diesel::joinable!(allowed_ips_clients -> clients (client_id));
 diesel::joinable!(clients -> dns_servers (dns_server_id));
 diesel::joinable!(clients -> keypairs (keypair_id));
 diesel::joinable!(clients -> vpn_ips (vpn_ip_id));
@@ -102,6 +119,8 @@ diesel::joinable!(tokens_servers -> tokens (token_id));
 diesel::joinable!(vpn_ips -> vpn_networks (vpn_network_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    allowed_ips,
+    allowed_ips_clients,
     clients,
     dns_servers,
     keypairs,

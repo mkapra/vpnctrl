@@ -24,6 +24,9 @@ pub use token::Token;
 pub mod user;
 pub use user::User;
 
+pub mod allowed_ip;
+pub use allowed_ip::AllowedIp;
+
 pub trait Model {
     /// Finds the object for the given `search_id` in the database
     ///

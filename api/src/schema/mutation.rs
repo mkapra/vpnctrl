@@ -1,7 +1,7 @@
 use anyhow::{bail, Result};
 use async_graphql::{Context, Object};
 
-use libwgbuilder::models::client::NewClient as NewDbClient;
+use libwgbuilder::models::client::{Client as DbClient, NewClient as NewDbClient};
 use libwgbuilder::models::dns_server::NewDnsServer as NewDbDnsServer;
 use libwgbuilder::models::keypair::NewKeypair as NewDbKeypair;
 use libwgbuilder::models::server::NewServer as NewDbServer;
@@ -9,7 +9,8 @@ use libwgbuilder::models::token::NewToken;
 use libwgbuilder::models::user::NewUser as NewDbUser;
 use libwgbuilder::models::vpn_ip::NewVpnIp;
 use libwgbuilder::models::vpn_network::NewVpnNetwork as NewDbVpnNetwork;
-use libwgbuilder::models::User;
+use libwgbuilder::models::{User, Model};
+use libwgbuilder::models::AllowedIp as DbAllowedIp;
 
 use super::get_db_connection;
 use crate::auth::{
@@ -175,5 +176,19 @@ impl Mutation {
         }
 
         bail!("Invalid password")
+    }
+
+    /// Assigns an allowed IP to a client
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn assign_allowed_ip(
+        &self,
+        ctx: &Context<'_>,
+        client_id: i32,
+        allowed_ip: String,
+    ) -> Result<bool> {
+        let mut db = get_db_connection(ctx)?;
+        let client = DbClient::find(client_id, &mut db)?;
+        DbAllowedIp::assign_ip_to_client(&client, &allowed_ip, &mut db)?;
+        Ok(true)
     }
 }

@@ -5,6 +5,6 @@ DNS = <%= dns_server %>
 
 [Peer]
 PublicKey = <%= peer_public_key %>
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = <%= allowed_ips %>
 Endpoint = <%= endpoint_address %>:<%= endpoint_port %>
 PersistentKeepalive = <%= keepalive %>
