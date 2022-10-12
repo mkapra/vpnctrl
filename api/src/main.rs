@@ -1,3 +1,5 @@
+use std::env;
+
 use async_graphql::http::GraphiQLSource;
 use async_graphql_rocket::{GraphQLRequest, GraphQLResponse};
 use database::DatabaseConn;
@@ -27,10 +29,10 @@ async fn graphql_request(
 
 #[launch]
 fn launch() -> _ {
-    let url = "postgres://localhost/wgbuilder";
-    let secret = "123123";
-    let pool = DatabaseConn::new(url).expect("Could not build database connection pool");
-    let schema = build_schema(pool, Secret::new(secret));
+    let url = env::var("DATABASE_URL").expect("Could not find DATABASE_URL");
+    let secret = env::var("SECRET").expect("Could not find SECRET for JWT tokens");
+    let pool = DatabaseConn::new(&url).expect("Could not build database connection pool");
+    let schema = build_schema(pool, Secret::new(&secret));
 
     rocket::build()
         .manage(schema)
