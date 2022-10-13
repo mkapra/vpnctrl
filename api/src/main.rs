@@ -72,7 +72,6 @@ fn launch() -> _ {
             .map(From::from)
             .collect(),
         allowed_headers: AllowedHeaders::All,
-        allow_credentials: true,
         ..Default::default()
     }
     .to_cors()
