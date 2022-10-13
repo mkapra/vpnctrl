@@ -177,6 +177,7 @@ impl Mutation {
 
         if bcrypt::verify(&old_password, &user.password)? {
             user.update_password(&new_password, &mut db)?;
+            return Ok(true);
         }
 
         bail!("Invalid password")
