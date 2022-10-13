@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{anyhow, bail, Result};
 use async_graphql::{Context, Object};
 
 use libwgbuilder::models::client::{Client as DbClient, NewClient as NewDbClient};
@@ -13,6 +13,7 @@ use libwgbuilder::models::AllowedIp as DbAllowedIp;
 use libwgbuilder::models::{Model, User};
 
 use super::get_db_connection;
+use crate::auth::jwt;
 use crate::auth::{
     jwt::{encode_jwt, Claims},
     AdminGuard,
@@ -151,12 +152,15 @@ impl Mutation {
     /// Returns a token for an user
     async fn login(&self, ctx: &Context<'_>, username: String, password: String) -> Result<String> {
         let mut db = get_db_connection(ctx)?;
+        let secret = ctx
+            .data::<jwt::Secret>()
+            .map_err(|_| anyhow!("Could not get secret key"))?;
         let user = User::find_by_username(&username, &mut db)?;
         if !bcrypt::verify(password, &user.password)? {
             bail!("Not authenticated")
         }
 
-        encode_jwt(&Claims::new(user.username, user.role), "123123")
+        encode_jwt(&Claims::new(user.username, user.role), &secret.0)
     }
 
     /// Changes the password for the given username
