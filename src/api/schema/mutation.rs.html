@@ -192,7 +192,11 @@
 <span id="192">192</span>
 <span id="193">193</span>
 <span id="194">194</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">bail</span>, <span class="prelude-ty">Result</span>};
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">anyhow</span>, <span class="ident">bail</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">async_graphql</span>::{<span class="ident">Context</span>, <span class="ident">Object</span>};
 
 <span class="kw">use</span> <span class="ident">libwgbuilder::models::client</span>::{<span class="ident">Client</span> <span class="kw">as</span> <span class="ident">DbClient</span>, <span class="ident">NewClient</span> <span class="kw">as</span> <span class="ident">NewDbClient</span>};
@@ -207,6 +211,7 @@
 <span class="kw">use</span> <span class="ident">libwgbuilder::models</span>::{<span class="ident">Model</span>, <span class="ident">User</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::get_db_connection</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::auth::jwt</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::auth</span>::{
     <span class="ident">jwt</span>::{<span class="ident">encode_jwt</span>, <span class="ident">Claims</span>},
     <span class="ident">AdminGuard</span>,
@@ -345,12 +350,15 @@
     <span class="doccomment">/// Returns a token for an user</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">login</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">username</span>: <span class="ident">String</span>, <span class="ident">password</span>: <span class="ident">String</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">get_db_connection</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">secret</span> <span class="op">=</span> <span class="ident">ctx</span>
+            .<span class="ident">data</span>::<span class="op">&lt;</span><span class="ident">jwt::Secret</span><span class="op">&gt;</span>()
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="macro">anyhow!</span>(<span class="string">&quot;Could not get secret key&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">user</span> <span class="op">=</span> <span class="ident">User::find_by_username</span>(<span class="kw-2">&amp;</span><span class="ident">username</span>, <span class="kw-2">&amp;mut</span> <span class="ident">db</span>)<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="op">!</span><span class="ident">bcrypt::verify</span>(<span class="ident">password</span>, <span class="kw-2">&amp;</span><span class="ident">user</span>.<span class="ident">password</span>)<span class="question-mark">?</span> {
             <span class="macro">bail!</span>(<span class="string">&quot;Not authenticated&quot;</span>)
         }
 
-        <span class="ident">encode_jwt</span>(<span class="kw-2">&amp;</span><span class="ident">Claims::new</span>(<span class="ident">user</span>.<span class="ident">username</span>, <span class="ident">user</span>.<span class="ident">role</span>), <span class="string">&quot;123123&quot;</span>)
+        <span class="ident">encode_jwt</span>(<span class="kw-2">&amp;</span><span class="ident">Claims::new</span>(<span class="ident">user</span>.<span class="ident">username</span>, <span class="ident">user</span>.<span class="ident">role</span>), <span class="kw-2">&amp;</span><span class="ident">secret</span>.<span class="number">0</span>)
     }
 
     <span class="doccomment">/// Changes the password for the given username</span>
