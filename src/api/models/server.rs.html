@@ -122,8 +122,8 @@
     <span class="attribute">#[<span class="ident">graphql</span>(<span class="ident">guard</span> <span class="op">=</span> <span class="string">&quot;ServerGuard::new(self.id)&quot;</span>)]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">configuration</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">get_db_connection</span>(<span class="ident">ctx</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="ident">DbClient::find</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="kw-2">&amp;mut</span> <span class="ident">db</span>)<span class="question-mark">?</span>;
-        <span class="ident">client</span>.<span class="ident">configuration</span>(<span class="kw-2">&amp;mut</span> <span class="ident">db</span>)
+        <span class="kw">let</span> <span class="ident">server</span> <span class="op">=</span> <span class="ident">DbServer::find</span>(<span class="self">self</span>.<span class="ident">id</span>, <span class="kw-2">&amp;mut</span> <span class="ident">db</span>)<span class="question-mark">?</span>;
+        <span class="ident">server</span>.<span class="ident">configuration</span>(<span class="kw-2">&amp;mut</span> <span class="ident">db</span>)
     }
 }
 
