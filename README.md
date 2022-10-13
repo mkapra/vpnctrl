@@ -4,4 +4,4 @@ This project provides multiple services that make rolling out wireguard configur
 
 ## Development
 
-* [API-Dokumentation libwgbuilder](https://mkapra.github.io/wireguard-builder-rs/libwgbuilder/index.html)
+* [API-Dokumentation libwgbuilder](https://mkapra.github.io/vpnctrl/libwgbuilder/index.html)
