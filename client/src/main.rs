@@ -63,7 +63,7 @@ impl Default for Configuration {
 fn get_request(cfg: &Configuration) -> RequestBuilder {
     Client::new()
         .post(format!("{}/graphql", cfg.address))
-        .header("Token", &cfg.api_key)
+        .header("Authorization", &format!("Token {}", &cfg.api_key))
 }
 
 /// Requests the configuration of the server and returns it
