@@ -1,0 +1,1 @@
+ALTER TABLE clients ALTER COLUMN dns_server_id SET NOT NULL;

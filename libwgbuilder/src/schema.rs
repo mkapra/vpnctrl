@@ -20,7 +20,7 @@ diesel::table! {
         id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
-        dns_server_id -> Int4,
+        dns_server_id -> Nullable<Int4>,
         keepalive -> Int4,
         keypair_id -> Int4,
         vpn_ip_id -> Int4,

@@ -1,7 +1,9 @@
 [Interface]
 PrivateKey = <%= private_key %>
 Address = <%= ip_address %>/<%= netmask %>
+<% if !dns_server.is_empty() { %>
 DNS = <%= dns_server %>
+<% } %>
 
 [Peer]
 PublicKey = <%= peer_public_key %>

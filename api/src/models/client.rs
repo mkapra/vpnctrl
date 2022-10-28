@@ -31,13 +31,18 @@ impl From<DbClient> for Client {
 
 #[ComplexObject]
 impl Client {
-    async fn dns_server(&self, ctx: &Context<'_>) -> Result<DnsServer> {
+    async fn dns_server(&self, ctx: &Context<'_>) -> Result<Option<DnsServer>> {
         let mut db = get_db_connection(ctx)?;
         let client = DbClient::find(self.id, &mut db)?;
-        Ok(DnsServer::from(DbDnsServer::find(
-            client.dns_server_id,
+
+        if let None = client.dns_server_id {
+            return Ok(None);
+        }
+
+        Ok(Some(DnsServer::from(DbDnsServer::find(
+            client.dns_server_id.unwrap(),
             &mut db,
-        )?))
+        )?)))
     }
 
     async fn keypair(&self, ctx: &Context<'_>) -> Result<Keypair> {
@@ -70,7 +75,7 @@ impl Client {
 pub struct NewClient {
     pub name: String,
     pub description: Option<String>,
-    pub dns_server_id: i32,
+    pub dns_server_id: Option<i32>,
     pub keepalive: i32,
     pub keypair_id: i32,
     pub vpn_ip: NewVpnIp,

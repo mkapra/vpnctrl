@@ -25,7 +25,7 @@ pub struct Client {
     pub id: i32,
     pub name: String,
     pub description: Option<String>,
-    pub dns_server_id: i32,
+    pub dns_server_id: Option<i32>,
     pub keepalive: i32,
     pub keypair_id: i32,
     pub vpn_ip_id: i32,
@@ -52,7 +52,11 @@ impl Client {
         let keypair = Keypair::find(self.keypair_id, conn)?;
         let vpn_ip = VpnIp::find(self.vpn_ip_id, conn)?;
         let vpn_network = VpnNetwork::find(vpn_ip.vpn_network_id, conn)?;
-        let dns_server = DnsServer::find(self.dns_server_id, conn)?;
+        let dns_server_ip = if let Some(dns_id) = self.dns_server_id {
+            DnsServer::find(dns_id, conn)?.ip
+        } else {
+            "".to_string()
+        };
 
         // Find the corresponding server in the VPN network of the client
         use crate::schema::vpn_ips::{self, dsl::*};
@@ -83,7 +87,7 @@ impl Client {
             private_key: keypair.private_key,
             ip_address: vpn_ip.address,
             netmask: vpn_network.subnetmask,
-            dns_server: dns_server.ip,
+            dns_server: dns_server_ip,
             peer_public_key: server_keypair.public_key,
             endpoint_address: server.external_ip,
             endpoint_port: vpn_network.port,
@@ -119,7 +123,7 @@ struct ClientConfig {
 pub struct NewClient<'a> {
     name: &'a str,
     description: Option<String>,
-    dns_server_id: i32,
+    dns_server_id: Option<i32>,
     keepalive: i32,
     keypair_id: i32,
     vpn_ip_id: i32,
@@ -130,7 +134,7 @@ impl NewClient<'_> {
     pub fn new(
         name: &str,
         description: Option<String>,
-        dns_server_id: i32,
+        dns_server_id: Option<i32>,
         keepalive: i32,
         keypair_id: i32,
         vpn_ip_id: i32,
