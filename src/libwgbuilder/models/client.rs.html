@@ -157,6 +157,10 @@
 <span id="157">157</span>
 <span id="158">158</span>
 <span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Client model</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A client is a device in the VPN network.</span>
@@ -184,7 +188,7 @@
     <span class="kw">pub</span> <span class="ident">id</span>: <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">name</span>: <span class="ident">String</span>,
     <span class="kw">pub</span> <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">dns_server_id</span>: <span class="ident">i32</span>,
+    <span class="kw">pub</span> <span class="ident">dns_server_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">keepalive</span>: <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">keypair_id</span>: <span class="ident">i32</span>,
     <span class="kw">pub</span> <span class="ident">vpn_ip_id</span>: <span class="ident">i32</span>,
@@ -211,7 +215,11 @@
         <span class="kw">let</span> <span class="ident">keypair</span> <span class="op">=</span> <span class="ident">Keypair::find</span>(<span class="self">self</span>.<span class="ident">keypair_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">vpn_ip</span> <span class="op">=</span> <span class="ident">VpnIp::find</span>(<span class="self">self</span>.<span class="ident">vpn_ip_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="ident">vpn_network</span> <span class="op">=</span> <span class="ident">VpnNetwork::find</span>(<span class="ident">vpn_ip</span>.<span class="ident">vpn_network_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">dns_server</span> <span class="op">=</span> <span class="ident">DnsServer::find</span>(<span class="self">self</span>.<span class="ident">dns_server_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">dns_server_ip</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dns_id</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">dns_server_id</span> {
+            <span class="ident">DnsServer::find</span>(<span class="ident">dns_id</span>, <span class="ident">conn</span>)<span class="question-mark">?</span>.<span class="ident">ip</span>
+        } <span class="kw">else</span> {
+            <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>()
+        };
 
         <span class="comment">// Find the corresponding server in the VPN network of the client</span>
         <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::schema::vpn_ips</span>::{<span class="self">self</span>, <span class="ident">dsl</span>::<span class="kw-2">*</span>};
@@ -242,7 +250,7 @@
             <span class="ident">private_key</span>: <span class="ident">keypair</span>.<span class="ident">private_key</span>,
             <span class="ident">ip_address</span>: <span class="ident">vpn_ip</span>.<span class="ident">address</span>,
             <span class="ident">netmask</span>: <span class="ident">vpn_network</span>.<span class="ident">subnetmask</span>,
-            <span class="ident">dns_server</span>: <span class="ident">dns_server</span>.<span class="ident">ip</span>,
+            <span class="ident">dns_server</span>: <span class="ident">dns_server_ip</span>,
             <span class="ident">peer_public_key</span>: <span class="ident">server_keypair</span>.<span class="ident">public_key</span>,
             <span class="ident">endpoint_address</span>: <span class="ident">server</span>.<span class="ident">external_ip</span>,
             <span class="ident">endpoint_port</span>: <span class="ident">vpn_network</span>.<span class="ident">port</span>,
@@ -278,7 +286,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NewClient</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>,
     <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-    <span class="ident">dns_server_id</span>: <span class="ident">i32</span>,
+    <span class="ident">dns_server_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
     <span class="ident">keepalive</span>: <span class="ident">i32</span>,
     <span class="ident">keypair_id</span>: <span class="ident">i32</span>,
     <span class="ident">vpn_ip_id</span>: <span class="ident">i32</span>,
@@ -289,7 +297,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
         <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
         <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
-        <span class="ident">dns_server_id</span>: <span class="ident">i32</span>,
+        <span class="ident">dns_server_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>,
         <span class="ident">keepalive</span>: <span class="ident">i32</span>,
         <span class="ident">keypair_id</span>: <span class="ident">i32</span>,
         <span class="ident">vpn_ip_id</span>: <span class="ident">i32</span>,
