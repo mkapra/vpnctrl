@@ -69,6 +69,12 @@ impl Client {
         AllowedIp::get_allowed_ips_for_client(&client, &mut db)
             .map(|v| v.into_iter().map(|a| a.address).collect())
     }
+    async fn allowed_ips_sending(&self, ctx: &Context<'_>) -> Result<Vec<String>> {
+        let mut db = get_db_connection(ctx)?;
+        let client = DbClient::find(self.id &mut db)?;
+        AllowedIp::get_allowed_source_ips_for_client(&client, &mut db)
+            .map(|v| v.into_iter().map(|a| a.address).collect())
+    }
 }
 
 #[derive(InputObject)]

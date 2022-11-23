@@ -1,0 +1,1 @@
+DROP TABLE allowed_ips_clients_sending;

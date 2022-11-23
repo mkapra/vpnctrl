@@ -72,4 +72,46 @@ impl AllowedIp {
             .load::<AllowedIp>(conn)
             .map_err(|e| anyhow::Error::from(e).context("Could not get allowed IPs for client"))
     }
+
+    /// This function assigns an allowed_ip to a client's pool of allowed source addresses, which
+    /// will be used to build configuration on the "server" side
+    pub fn assign_ip_to_client_sending(
+        client: &Client,
+        ip_address: &str,
+        conn: &mut PgConnection,
+    ) -> anyhow::Result<()> {
+        use crate::schema::allowed_ips::dsl::*;
+        use crate::schema::allowed_ips_clients_sending::dsl::*;
+
+        let address_id = match AllowedIp::address_exists(ip_address, conn) {
+            Ok(i) => i,
+            Err(_) => diesel::insert_into(allowed_ips)
+                .values(adress.eq(ip_address))
+                .get_result::<AllowedIp>(conn)
+                .map(|ip| ip.id)
+                .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed source IP"))?,
+        };
+
+        diesel::insert_into(allowed_ips_clients_sending)
+            .values((client_id.eq(client.id), allowed_ip_ip.eq(address_id)))
+            .execute(conn)
+            .map(|_| ())
+            .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed source IP"))
+    }
+
+    /// This function retrieves allowed source addresses for a give client
+    pub fn get_allowed_source_ips_for_client(
+        client: &Client,
+        conn: &mut PgConnection,
+    ) -> anyhow::Result<Vec<AllowedIp>> {
+        use crate::schema::allowed_ips;
+        // allowed_ips_clients_sending
+        use crate::schema::allowed_ips_clients_sending::{self, dsl::*};
+        allowed_ips_clients_sending::table
+            .inner_join(allowed_ips::table)
+            .filter(client_id.eq(client.id))
+            .select(allowed_ips::all_columns)
+            .load::<AllowedIp>(conn)
+            .map_err(|e| anyhow::Error::from(e).context("Could not get allowed source IPs for client"))
+    }
 }
