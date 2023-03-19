@@ -12,4 +12,4 @@ anyhow = "1.0.65"
 sailfish = "0.5"
 chrono = "0.4"
 uuid = { version = "1.2.1", features = ["v4", "fast-rng"] }
-bcrypt = "0.13"
+bcrypt = "0.14"
