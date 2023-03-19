@@ -1,3 +1,3 @@
-(function() {var implementors = {};
-implementors["api"] = [{"text":"impl Guard for <a class=\"struct\" href=\"api/auth/struct.AdminGuard.html\" title=\"struct api::auth::AdminGuard\">AdminGuard</a>","synthetic":false,"types":["api::auth::AdminGuard"]},{"text":"impl Guard for <a class=\"struct\" href=\"api/auth/struct.ClientGuard.html\" title=\"struct api::auth::ClientGuard\">ClientGuard</a>","synthetic":false,"types":["api::auth::ClientGuard"]},{"text":"impl Guard for <a class=\"struct\" href=\"api/auth/struct.ServerGuard.html\" title=\"struct api::auth::ServerGuard\">ServerGuard</a>","synthetic":false,"types":["api::auth::ServerGuard"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
+(function() {var implementors = {
+"api":[["impl Guard for <a class=\"struct\" href=\"api/auth/struct.AdminGuard.html\" title=\"struct api::auth::AdminGuard\">AdminGuard</a>"],["impl Guard for <a class=\"struct\" href=\"api/auth/struct.ClientGuard.html\" title=\"struct api::auth::ClientGuard\">ClientGuard</a>"],["impl Guard for <a class=\"struct\" href=\"api/auth/struct.ServerGuard.html\" title=\"struct api::auth::ServerGuard\">ServerGuard</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
