@@ -10,6 +10,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features
+    if: github.actor != 'dependabot[bot]'
   format:
     name: rustfmt
     runs-on: ubuntu-latest
@@ -23,3 +24,4 @@ jobs:
         - uses: mbrobbel/rustfmt-check@master
           with:
             token: ${{ secrets.GITHUB_TOKEN }}
+    if: github.actor != 'dependabot[bot]'
