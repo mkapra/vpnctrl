@@ -20,7 +20,6 @@ jobs:
               toolchain: nightly
               components: rustfmt
               override: true
-        - uses: LoliGothick/rustfmt-check@v0.2
+        - uses: mbrobbel/rustfmt-check@master
           with:
-              token: ${{ secrets.GITHUB_TOKEN }}
-              flags: --all
+            token: ${{ secrets.GITHUB_TOKEN }}
