@@ -86,14 +86,14 @@ impl AllowedIp {
         let address_id = match AllowedIp::address_exists(ip_address, conn) {
             Ok(i) => i,
             Err(_) => diesel::insert_into(allowed_ips)
-                .values(adress.eq(ip_address))
+                .values(address.eq(ip_address))
                 .get_result::<AllowedIp>(conn)
                 .map(|ip| ip.id)
                 .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed source IP"))?,
         };
 
         diesel::insert_into(allowed_ips_clients_sending)
-            .values((client_id.eq(client.id), allowed_ip_ip.eq(address_id)))
+            .values((client_id.eq(client.id), allowed_ip_id.eq(address_id)))
             .execute(conn)
             .map(|_| ())
             .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed source IP"))
