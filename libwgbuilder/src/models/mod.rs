@@ -35,4 +35,7 @@ pub trait Model {
     fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
     where
         Self: Sized;
+
+    /// Updates the given object in the database
+    fn edit(&mut self, conn: &mut PgConnection) -> anyhow::Result<()>;
 }
