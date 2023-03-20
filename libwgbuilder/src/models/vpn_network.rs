@@ -24,9 +24,7 @@ impl VpnNetwork {
         use crate::schema::vpn_networks::dsl::*;
         vpn_networks
             .load::<VpnNetwork>(conn)
-            .map_err(|e| {
-                anyhow::Error::from(e).context("Could not get all vpn networks")
-            })
+            .map_err(|e| anyhow::Error::from(e).context("Could not get all vpn networks"))
     }
 }
 
