@@ -79,6 +79,7 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::env;
 
 <span class="kw">use </span>async_graphql::{http::GraphiQLSource, Request, Response};
@@ -151,8 +152,9 @@
         .at(<span class="string">&quot;/&quot;</span>, get(graphiql).post(graphql_handler))
         .with(
             Cors::new()
-                .allow_origin(<span class="string">&quot;localhost&quot;</span>)
-                .allow_methods(<span class="macro">vec!</span>[Method::GET, Method::POST]),
+                .allow_origin(<span class="string">&quot;*&quot;</span>)
+                .allow_methods(<span class="macro">vec!</span>[Method::GET, Method::POST, Method::OPTIONS])
+                .allow_credentials(<span class="bool-val">true</span>),
         )
         .data(schema);
 
