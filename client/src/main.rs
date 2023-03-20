@@ -62,7 +62,7 @@ impl Default for Configuration {
 /// Basic request builder
 fn get_request(cfg: &Configuration) -> RequestBuilder {
     Client::new()
-        .post(cfg.address)
+        .post(cfg.address.as_str())
         .header("Authorization", &format!("Token {}", &cfg.api_key))
 }
 
