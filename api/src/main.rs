@@ -1,60 +1,61 @@
 use std::env;
 
-use async_graphql::http::GraphiQLSource;
-use async_graphql_rocket::{GraphQLRequest, GraphQLResponse};
+use async_graphql::{http::GraphiQLSource, Request, Response};
 use database::DatabaseConn;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use rocket::{
-    get,
-    http::{Method, Status},
-    launch, post,
-    request::Outcome,
-    request::{self, FromRequest},
-    response::content,
-    routes, Request, State,
+use poem::{
+    get, handler,
+    http::StatusCode,
+    listener::TcpListener,
+    web::{Data, Html, Json},
+    EndpointExt, FromRequest, IntoResponse, RequestBody, Route, Server,
 };
 
 mod schema;
-use rocket_cors::AllowedHeaders;
 use schema::{build_schema, WireguardSchema};
 
 mod auth;
 mod database;
 mod models;
-use auth::{jwt::Secret, ApiKey};
+use auth::jwt::Secret;
+
+use auth::ApiKey;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("../libwgbuilder/migrations/");
 
-pub struct SkipGraphiQL;
+struct CheckForDebug;
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for SkipGraphiQL {
-    type Error = anyhow::Error;
-
-    async fn from_request(_: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
-        match cfg!(debug_assertions) {
-            true => Outcome::Success(SkipGraphiQL {}),
-            false => Outcome::Failure((Status::NotFound, anyhow::anyhow!("Not found"))),
-        }
+#[poem::async_trait]
+impl<'a> FromRequest<'a> for CheckForDebug {
+    async fn from_request(_req: &'a poem::Request, _body: &mut RequestBody) -> poem::Result<Self> {
+        return match cfg!(debug_assertions) {
+            true => Ok(CheckForDebug),
+            false => Err(poem::Error::from_string("", StatusCode::NOT_FOUND)),
+        };
     }
 }
 
-#[get("/")]
-fn graphiql(_skip_graphiql: SkipGraphiQL) -> content::RawHtml<String> {
-    content::RawHtml(GraphiQLSource::build().endpoint("/graphql").finish())
+#[handler]
+async fn graphiql(_: CheckForDebug) -> impl IntoResponse {
+    Html(
+        GraphiQLSource::build()
+            .endpoint("/")
+            .header("Authorization", "Bearer [token]")
+            .finish(),
+    )
 }
 
-#[post("/graphql", data = "<request>", format = "application/json")]
-async fn graphql_request(
-    schema: &State<WireguardSchema>,
-    request: GraphQLRequest,
+#[handler]
+async fn graphql_handler(
+    schema: Data<&WireguardSchema>,
+    req: Json<Request>,
     api_key: ApiKey,
-) -> GraphQLResponse {
-    request.data(api_key).execute(schema).await
+) -> Json<Response> {
+    Json(schema.execute(req.0.data(api_key)).await)
 }
 
-#[launch]
-fn launch() -> _ {
+#[tokio::main]
+async fn main() -> Result<(), std::io::Error> {
     let url = env::var("DATABASE_URL").expect("Could not find DATABASE_URL");
     let secret = env::var("SECRET").expect("Could not find SECRET for JWT tokens");
     let pool = DatabaseConn::new(&url).expect("Could not build database connection pool");
@@ -63,22 +64,11 @@ fn launch() -> _ {
     db.run_pending_migrations(MIGRATIONS)
         .expect("Could not run migrations");
 
-    // Init rocket_cors CORS
-    let allowed_origins = rocket_cors::AllowedOrigins::all();
-    let cors = rocket_cors::CorsOptions {
-        allowed_origins,
-        allowed_methods: vec![Method::Get, Method::Post]
-            .into_iter()
-            .map(From::from)
-            .collect(),
-        allowed_headers: AllowedHeaders::All,
-        ..Default::default()
-    }
-    .to_cors()
-    .expect("Could not build CORS");
+    let app = Route::new()
+        .at("/", get(graphiql).post(graphql_handler))
+        .data(schema);
 
-    rocket::build()
-        .manage(schema)
-        .mount("/", routes![graphql_request, graphiql])
-        .attach(cors)
+    Server::new(TcpListener::bind("127.0.0.1:3000"))
+        .run(app)
+        .await
 }

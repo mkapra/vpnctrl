@@ -1,11 +1,7 @@
 use anyhow::anyhow;
 use async_graphql::{async_trait, Context, Guard, Result};
 use libwgbuilder::models::Token;
-use rocket::{
-    outcome::Outcome,
-    request::{self, FromRequest},
-    Request,
-};
+use poem::{http::StatusCode, FromRequest, Request, RequestBody};
 
 use crate::schema::get_db_connection;
 
@@ -97,15 +93,20 @@ impl Guard for ServerGuard {
 #[derive(Debug)]
 pub struct ApiKey(String);
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for ApiKey {
-    type Error = ();
+#[poem::async_trait]
+impl<'a> FromRequest<'a> for ApiKey {
+    async fn from_request(req: &'a Request, _body: &mut RequestBody) -> poem::Result<Self> {
+        let token = req
+            .headers()
+            .get("Authorization")
+            .and_then(|value| value.to_str().ok())
+            .ok_or_else(|| {
+                poem::Error::from_string("{\"error\": \"missing token\"}", StatusCode::BAD_REQUEST)
+            })?;
 
-    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
-        match request.headers().get_one("Authorization") {
-            Some(token) => Outcome::Success(ApiKey(token.split(" ").last().unwrap().to_string())),
-            _ => Outcome::Success(ApiKey("".to_string())),
-        }
+        Ok(ApiKey(
+            token.to_string().split(" ").last().unwrap().to_string(),
+        ))
     }
 }
 
