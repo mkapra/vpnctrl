@@ -132,6 +132,17 @@
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
 </pre><pre class="rust"><code><span class="comment">// @generated automatically by Diesel CLI.
 
 </span><span class="macro">diesel::table! </span>{
@@ -143,6 +154,14 @@
 
 <span class="macro">diesel::table! </span>{
     allowed_ips_clients (id) {
+        id -&gt; Int4,
+        allowed_ip_id -&gt; Int4,
+        client_id -&gt; Int4,
+    }
+}
+
+<span class="macro">diesel::table! </span>{
+    allowed_ips_clients_sending (id) {
         id -&gt; Int4,
         allowed_ip_id -&gt; Int4,
         client_id -&gt; Int4,
@@ -241,6 +260,8 @@
 
 <span class="macro">diesel::joinable!</span>(allowed_ips_clients -&gt; allowed_ips (allowed_ip_id));
 <span class="macro">diesel::joinable!</span>(allowed_ips_clients -&gt; clients (client_id));
+<span class="macro">diesel::joinable!</span>(allowed_ips_clients_sending -&gt; allowed_ips (allowed_ip_id));
+<span class="macro">diesel::joinable!</span>(allowed_ips_clients_sending -&gt; clients (client_id));
 <span class="macro">diesel::joinable!</span>(clients -&gt; dns_servers (dns_server_id));
 <span class="macro">diesel::joinable!</span>(clients -&gt; keypairs (keypair_id));
 <span class="macro">diesel::joinable!</span>(clients -&gt; vpn_ips (vpn_ip_id));
@@ -255,6 +276,7 @@
 <span class="macro">diesel::allow_tables_to_appear_in_same_query!</span>(
     allowed_ips,
     allowed_ips_clients,
+    allowed_ips_clients_sending,
     clients,
     dns_servers,
     keypairs,

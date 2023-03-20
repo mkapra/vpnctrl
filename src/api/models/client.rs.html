@@ -80,6 +80,13 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_graphql::{ComplexObject, Context, InputObject, SimpleObject};
 <span class="kw">use </span>libwgbuilder::models::{
@@ -149,6 +156,13 @@
         <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>client = DbClient::find(<span class="self">self</span>.id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         AllowedIp::get_allowed_ips_for_client(<span class="kw-2">&amp;</span>client, <span class="kw-2">&amp;mut </span>db)
+            .map(|v| v.into_iter().map(|a| a.address).collect())
+    }
+
+    <span class="kw">async fn </span>allowed_ips_sending(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
+        <span class="kw">let </span>client = DbClient::find(<span class="self">self</span>.id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
+        AllowedIp::get_sending_ips_for_client(<span class="kw-2">&amp;</span>client, <span class="kw-2">&amp;mut </span>db)
             .map(|v| v.into_iter().map(|a| a.address).collect())
     }
 }

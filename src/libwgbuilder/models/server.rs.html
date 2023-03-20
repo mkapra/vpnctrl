@@ -143,6 +143,17 @@
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Server model
 //!
 //! The server is the gateway for the clients
@@ -153,7 +164,11 @@
 };
 <span class="kw">use </span>sailfish::TemplateOnce;
 
-<span class="kw">use crate</span>::{models::Client, schema::servers, Error};
+<span class="kw">use crate</span>::{
+    models::{AllowedIp, Client},
+    schema::servers,
+    Error,
+};
 
 <span class="kw">use super</span>::{Keypair, Model, VpnIp, VpnNetwork};
 
@@ -206,11 +221,17 @@
         <span class="kw">let </span><span class="kw-2">mut </span>template_clients = Vec::with_capacity(clients.len());
         <span class="kw">for </span>(c, ip) <span class="kw">in </span>clients {
             <span class="kw">let </span>keypair = Keypair::find(c.keypair_id, conn)<span class="question-mark">?</span>;
+            <span class="kw">let </span>allowed_ips = AllowedIp::get_sending_ips_for_client(<span class="kw-2">&amp;</span>c, conn)<span class="question-mark">?
+                </span>.into_iter()
+                .map(|e| e.address)
+                .collect::&lt;Vec&lt;String&gt;&gt;()
+                .join(<span class="string">&quot;, &quot;</span>);
 
             template_clients.push(TemplateClient {
                 name: c.name.clone(),
                 public_key: keypair.public_key,
                 ip: ip.address.clone(),
+                sending_ips: allowed_ips,
             });
         }
 
@@ -232,6 +253,7 @@
     name: String,
     public_key: String,
     ip: String,
+    sending_ips: String,
 }
 
 <span class="attr">#[derive(TemplateOnce)]
