@@ -18,6 +18,18 @@ pub struct DnsServer {
     pub description: Option<String>,
 }
 
+impl DnsServer {
+    pub fn all(conn: &mut PgConnection) -> anyhow::Result<Vec<Self>> {
+        use crate::schema::dns_servers::dsl::*;
+        dns_servers
+            .load(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context("Could not load DNS servers")
+            })
+    }
+}
+
 impl Model for DnsServer {
     fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
     where

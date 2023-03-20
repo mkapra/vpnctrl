@@ -31,6 +31,14 @@ impl QueryRoot {
         Ok(DnsServer::from(dns_server))
     }
 
+    /// Returns all dns servers
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn dns_servers(&self, ctx: &Context<'_>) -> Result<Vec<DnsServer>> {
+        let mut db = get_db_connection(ctx)?;
+        let dns_servers = libwgbuilder::models::DnsServer::all(&mut db)?;
+        Ok(dns_servers.into_iter().map(|d| DnsServer::from(d)).collect())
+    }
+
     /// Returns the requested VPN network
     #[graphql(guard = "AdminGuard::new()")]
     async fn vpn_network(&self, ctx: &Context<'_>, id: i32) -> Result<VpnNetwork> {
