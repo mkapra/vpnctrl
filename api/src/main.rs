@@ -38,11 +38,7 @@ impl<'a> FromRequest<'a> for CheckForDebug {
 
 #[handler]
 async fn graphiql(_: CheckForDebug) -> impl IntoResponse {
-    Html(
-        GraphiQLSource::build()
-            .endpoint("/")
-            .finish(),
-    )
+    Html(GraphiQLSource::build().endpoint("/").finish())
 }
 
 #[handler]
