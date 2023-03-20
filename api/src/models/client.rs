@@ -35,7 +35,7 @@ impl Client {
         let mut db = get_db_connection(ctx)?;
         let client = DbClient::find(self.id, &mut db)?;
 
-        if let None = client.dns_server_id {
+        if client.dns_server_id.is_none() {
             return Ok(None);
         }
 

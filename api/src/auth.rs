@@ -105,7 +105,7 @@ impl<'a> FromRequest<'a> for ApiKey {
             })?;
 
         Ok(ApiKey(
-            token.to_string().split(" ").last().unwrap().to_string(),
+            token.to_string().split(' ').last().unwrap().to_string(),
         ))
     }
 }

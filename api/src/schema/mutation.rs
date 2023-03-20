@@ -175,7 +175,7 @@ impl Mutation {
         let mut db = get_db_connection(ctx)?;
         let user = User::find_by_username(&username, &mut db)?;
 
-        if bcrypt::verify(&old_password, &user.password)? {
+        if bcrypt::verify(old_password, &user.password)? {
             user.update_password(&new_password, &mut db)?;
             return Ok(true);
         }

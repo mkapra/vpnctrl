@@ -77,7 +77,7 @@ impl Client {
                     .context("Could not get server from database")
             })?;
         let server_keypair = Keypair::find(server.keypair_id, conn)?;
-        let allowed_ips = AllowedIp::get_allowed_ips_for_client(&self, conn)?
+        let allowed_ips = AllowedIp::get_allowed_ips_for_client(self, conn)?
             .into_iter()
             .map(|e| e.address)
             .collect::<Vec<String>>()

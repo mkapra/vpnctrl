@@ -2,7 +2,6 @@ use anyhow::Result;
 use async_graphql::Context;
 use async_graphql::InputObject;
 use async_graphql::{ComplexObject, SimpleObject};
-use libwgbuilder::models::Client as DbClient;
 use libwgbuilder::models::Keypair as DbKeypair;
 use libwgbuilder::models::Model;
 use libwgbuilder::models::Server as DbServer;

@@ -111,8 +111,8 @@ async fn client_configuration_query(cfg: &Configuration) -> Result<String> {
 /// Writes the configuration to the file and restarts the wireguard client if necessary
 async fn get_and_write_wg_config(args: &Arguments, cfg: &Configuration) -> Result<()> {
     let configuration = match args.r#type {
-        Type::Client => client_configuration_query(&cfg).await,
-        Type::Server => server_configuration_query(&cfg).await,
+        Type::Client => client_configuration_query(cfg).await,
+        Type::Server => server_configuration_query(cfg).await,
     }?;
     let configuration_file = format!("/etc/wireguard/{}.conf", cfg.interface_name);
 
