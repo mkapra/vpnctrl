@@ -40,8 +40,7 @@ impl<'a> FromRequest<'a> for CheckForDebug {
 async fn graphiql(_: CheckForDebug) -> impl IntoResponse {
     Html(
         GraphiQLSource::build()
-            .endpoint("https://vpnctrl.kapra.de/")
-            .header("Authorization", "Bearer [token]")
+            .endpoint("/")
             .finish(),
     )
 }
