@@ -74,6 +74,11 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::env;
 
 <span class="kw">use </span>async_graphql::{http::GraphiQLSource, Request, Response};
@@ -114,7 +119,12 @@
 
 <span class="attr">#[handler]
 </span><span class="kw">async fn </span>graphiql(<span class="kw">_</span>: CheckForDebug) -&gt; <span class="kw">impl </span>IntoResponse {
-    Html(GraphiQLSource::build().endpoint(<span class="string">&quot;/&quot;</span>).header(<span class="string">&quot;Authorization&quot;</span>, <span class="string">&quot;Bearer token&quot;</span>).finish())
+    Html(
+        GraphiQLSource::build()
+            .endpoint(<span class="string">&quot;/&quot;</span>)
+            .header(<span class="string">&quot;Authorization&quot;</span>, <span class="string">&quot;Bearer token&quot;</span>)
+            .finish(),
+    )
 }
 
 <span class="attr">#[handler]
