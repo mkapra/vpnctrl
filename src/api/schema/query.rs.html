@@ -63,6 +63,14 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Queries in the GraphQL schema
 </span><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_graphql::{Context, Object};
@@ -102,6 +110,14 @@
         <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>vpn_network = libwgbuilder::models::VpnNetwork::find(id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(VpnNetwork::from(vpn_network))
+    }
+
+    <span class="doccomment">/// Returns all VPN networks
+    </span><span class="attr">#[graphql(guard = <span class="string">&quot;AdminGuard::new()&quot;</span>)]
+    </span><span class="kw">async fn </span>vpn_networks(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;VpnNetwork&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
+        <span class="kw">let </span>vpn_networks = libwgbuilder::models::VpnNetwork::all(<span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(vpn_networks.into_iter().map(|v| VpnNetwork::from(v)).collect())
     }
 
     <span class="doccomment">/// Returns the requested VPN IP address
