@@ -2,5 +2,6 @@
 members = [
   "libwgbuilder",
   "api",
-  "client"
+  "client",
+  "cli",
 ]
