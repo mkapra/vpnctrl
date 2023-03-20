@@ -78,8 +78,6 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::env;
 
 <span class="kw">use </span>async_graphql::{http::GraphiQLSource, Request, Response};
@@ -122,8 +120,7 @@
 </span><span class="kw">async fn </span>graphiql(<span class="kw">_</span>: CheckForDebug) -&gt; <span class="kw">impl </span>IntoResponse {
     Html(
         GraphiQLSource::build()
-            .endpoint(<span class="string">&quot;https://vpnctrl.kapra.de/&quot;</span>)
-            .header(<span class="string">&quot;Authorization&quot;</span>, <span class="string">&quot;Bearer [token]&quot;</span>)
+            .endpoint(<span class="string">&quot;/&quot;</span>)
             .finish(),
     )
 }
@@ -152,7 +149,6 @@
         .at(<span class="string">&quot;/&quot;</span>, get(graphiql).post(graphql_handler))
         .with(
             Cors::new()
-                .allow_origin(<span class="string">&quot;*&quot;</span>)
                 .allow_methods(<span class="macro">vec!</span>[Method::GET, Method::POST, Method::OPTIONS])
                 .allow_credentials(<span class="bool-val">true</span>),
         )
