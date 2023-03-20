@@ -65,14 +65,9 @@ async fn main() -> Result<(), std::io::Error> {
     db.run_pending_migrations(MIGRATIONS)
         .expect("Could not run migrations");
 
-    let cors = Cors::default()
-        .allow_method(Method::GET)
-        .allow_method(Method::POST)
-        .allow_credentials(true);
-
     let app = Route::new()
         .at("/", get(graphiql).post(graphql_handler))
-        .with(cors)
+        .with(Cors::new().allow_origin("localhost").allow_methods(vec![Method::GET, Method::POST]))
         .data(schema);
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
