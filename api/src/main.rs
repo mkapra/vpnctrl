@@ -5,7 +5,8 @@ use database::DatabaseConn;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use poem::{
     get, handler,
-    http::StatusCode,
+    middleware::Cors,
+    http::{StatusCode, Method},
     listener::TcpListener,
     web::{Data, Html, Json},
     EndpointExt, FromRequest, IntoResponse, RequestBody, Route, Server,
@@ -39,7 +40,7 @@ impl<'a> FromRequest<'a> for CheckForDebug {
 async fn graphiql(_: CheckForDebug) -> impl IntoResponse {
     Html(
         GraphiQLSource::build()
-            .endpoint("/")
+            .endpoint("https://vpnctrl.kapra.de/")
             .header("Authorization", "Bearer [token]")
             .finish(),
     )
@@ -64,8 +65,14 @@ async fn main() -> Result<(), std::io::Error> {
     db.run_pending_migrations(MIGRATIONS)
         .expect("Could not run migrations");
 
+    let cors = Cors::default()
+        .allow_method(Method::GET)
+        .allow_method(Method::POST)
+        .allow_credentials(true);
+
     let app = Route::new()
         .at("/", get(graphiql).post(graphql_handler))
+        .with(cors)
         .data(schema);
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
