@@ -142,7 +142,7 @@
         .at(<span class="string">&quot;/&quot;</span>, get(graphiql).post(graphql_handler))
         .data(schema);
 
-    Server::new(TcpListener::bind(<span class="string">&quot;127.0.0.1:3000&quot;</span>))
+    Server::new(TcpListener::bind(<span class="string">&quot;0.0.0.0:3000&quot;</span>))
         .run(app)
         .<span class="kw">await
 </span>}
