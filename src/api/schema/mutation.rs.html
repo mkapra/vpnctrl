@@ -388,7 +388,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>user = User::find_by_username(<span class="kw-2">&amp;</span>username, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
 
-        <span class="kw">if </span>bcrypt::verify(<span class="kw-2">&amp;</span>old_password, <span class="kw-2">&amp;</span>user.password)<span class="question-mark">? </span>{
+        <span class="kw">if </span>bcrypt::verify(old_password, <span class="kw-2">&amp;</span>user.password)<span class="question-mark">? </span>{
             user.update_password(<span class="kw-2">&amp;</span>new_password, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
         }

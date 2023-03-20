@@ -273,8 +273,8 @@
 <span class="doccomment">/// Writes the configuration to the file and restarts the wireguard client if necessary
 </span><span class="kw">async fn </span>get_and_write_wg_config(args: <span class="kw-2">&amp;</span>Arguments, cfg: <span class="kw-2">&amp;</span>Configuration) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>configuration = <span class="kw">match </span>args.r#type {
-        Type::Client =&gt; client_configuration_query(<span class="kw-2">&amp;</span>cfg).<span class="kw">await</span>,
-        Type::Server =&gt; server_configuration_query(<span class="kw-2">&amp;</span>cfg).<span class="kw">await</span>,
+        Type::Client =&gt; client_configuration_query(cfg).<span class="kw">await</span>,
+        Type::Server =&gt; server_configuration_query(cfg).<span class="kw">await</span>,
     }<span class="question-mark">?</span>;
     <span class="kw">let </span>configuration_file = <span class="macro">format!</span>(<span class="string">&quot;/etc/wireguard/{}.conf&quot;</span>, cfg.interface_name);
 

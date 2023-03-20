@@ -240,7 +240,7 @@
                     .context(<span class="string">&quot;Could not get server from database&quot;</span>)
             })<span class="question-mark">?</span>;
         <span class="kw">let </span>server_keypair = Keypair::find(server.keypair_id, conn)<span class="question-mark">?</span>;
-        <span class="kw">let </span>allowed_ips = AllowedIp::get_allowed_ips_for_client(<span class="kw-2">&amp;</span><span class="self">self</span>, conn)<span class="question-mark">?
+        <span class="kw">let </span>allowed_ips = AllowedIp::get_allowed_ips_for_client(<span class="self">self</span>, conn)<span class="question-mark">?
             </span>.into_iter()
             .map(|e| e.address)
             .collect::&lt;Vec&lt;String&gt;&gt;()
