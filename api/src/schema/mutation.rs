@@ -196,4 +196,18 @@ impl Mutation {
         DbAllowedIp::assign_ip_to_client(&client, &allowed_ip, &mut db)?;
         Ok(true)
     }
+
+    /// Assigns an sending IP to a client
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn assign_sending_ip(
+        &self,
+        ctx: &Context<'_>,
+        client_id: i32,
+        sending_ip: String,
+    ) -> Result<bool> {
+        let mut db = get_db_connection(ctx)?;
+        let client = DbClient::find(client_id, &mut db)?;
+        DbAllowedIp::assign_sending_ip_to_client(&client, &sending_ip, &mut db)?;
+        Ok(true)
+    }
 }

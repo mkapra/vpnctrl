@@ -8,7 +8,11 @@ use diesel::{
 };
 use sailfish::TemplateOnce;
 
-use crate::{models::Client, schema::servers, Error};
+use crate::{
+    models::{AllowedIp, Client},
+    schema::servers,
+    Error,
+};
 
 use super::{Keypair, Model, VpnIp, VpnNetwork};
 
@@ -61,11 +65,17 @@ impl Server {
         let mut template_clients = Vec::with_capacity(clients.len());
         for (c, ip) in clients {
             let keypair = Keypair::find(c.keypair_id, conn)?;
+            let allowed_ips = AllowedIp::get_sending_ips_for_client(&c, conn)?
+                .into_iter()
+                .map(|e| e.address)
+                .collect::<Vec<String>>()
+                .join(", ");
 
             template_clients.push(TemplateClient {
                 name: c.name.clone(),
                 public_key: keypair.public_key,
                 ip: ip.address.clone(),
+                sending_ips: allowed_ips,
             });
         }
 
@@ -87,6 +97,7 @@ struct TemplateClient {
     name: String,
     public_key: String,
     ip: String,
+    sending_ips: String,
 }
 
 #[derive(TemplateOnce)]
