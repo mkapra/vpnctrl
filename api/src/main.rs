@@ -69,7 +69,6 @@ async fn main() -> Result<(), std::io::Error> {
         .at("/", get(graphiql).post(graphql_handler))
         .with(
             Cors::new()
-                .allow_origin("*")
                 .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
                 .allow_credentials(true),
         )
