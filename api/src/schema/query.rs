@@ -39,6 +39,14 @@ impl QueryRoot {
         Ok(VpnNetwork::from(vpn_network))
     }
 
+    /// Returns all VPN networks
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn vpn_networks(&self, ctx: &Context<'_>) -> Result<Vec<VpnNetwork>> {
+        let mut db = get_db_connection(ctx)?;
+        let vpn_networks = libwgbuilder::models::VpnNetwork::all(&mut db)?;
+        Ok(vpn_networks.into_iter().map(|v| VpnNetwork::from(v)).collect())
+    }
+
     /// Returns the requested VPN IP address
     #[graphql(guard = "AdminGuard::new()")]
     async fn vpn_ip(&self, ctx: &Context<'_>, id: i32) -> Result<VpnIp> {

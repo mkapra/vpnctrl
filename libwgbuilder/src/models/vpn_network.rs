@@ -19,6 +19,17 @@ pub struct VpnNetwork {
     pub port: i32,
 }
 
+impl VpnNetwork {
+    pub fn all(conn: &mut PgConnection) -> anyhow::Result<Vec<Self>> {
+        use crate::schema::vpn_networks::dsl::*;
+        vpn_networks
+            .load::<VpnNetwork>(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e).context("Could not get all vpn networks")
+            })
+    }
+}
+
 impl Model for VpnNetwork {
     fn find(search_id: i32, conn: &mut PgConnection) -> anyhow::Result<Self>
     where
