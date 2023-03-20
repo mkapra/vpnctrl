@@ -5,9 +5,9 @@ use database::DatabaseConn;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use poem::{
     get, handler,
-    middleware::Cors,
-    http::{StatusCode, Method},
+    http::{Method, StatusCode},
     listener::TcpListener,
+    middleware::Cors,
     web::{Data, Html, Json},
     EndpointExt, FromRequest, IntoResponse, RequestBody, Route, Server,
 };
