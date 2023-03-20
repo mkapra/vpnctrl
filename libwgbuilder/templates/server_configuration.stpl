@@ -9,9 +9,5 @@ PrivateKey = <%= private_key %>
 ## <%= client.name %>
 [Peer]
 PublicKey = <%= client.public_key %>
-<% if client.sending_ips.is_empty() { %>
-AllowedIps = <%= client.ip %>/32
-<% } else { %>
-AllowedIps = <%= client.ip %>/32, <%= client.sending_ips %>
-<% } %>
+<% if client.sending_ips.is_empty() { %>AllowedIps = <%= client.ip %>/32<% } else { %>AllowedIps = <%= client.ip %>/32, <%= client.sending_ips %><% } %>
 <% } %>
