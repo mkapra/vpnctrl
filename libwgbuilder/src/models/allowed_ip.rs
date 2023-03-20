@@ -58,6 +58,33 @@ impl AllowedIp {
             .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed IP"))
     }
 
+    /// This function assigns the IP addresses that a given client is allowed to send traffic with
+    ///
+    /// Creates the ip address if it does not exist yet
+    pub fn assign_sending_ip_to_client(
+        client: &Client,
+        ip_address: &str,
+        conn: &mut PgConnection,
+    ) -> anyhow::Result<()> {
+        use crate::schema::allowed_ips::dsl::*;
+        use crate::schema::allowed_ips_clients_sending::dsl::*;
+
+        let address_id = match AllowedIp::address_exists(ip_address, conn) {
+            Ok(i) => i,
+            Err(_) => diesel::insert_into(allowed_ips)
+                .values(address.eq(ip_address))
+                .get_result::<AllowedIp>(conn)
+                .map(|ip| ip.id)
+                .map_err(|e| anyhow::Error::from(e).context("Could not insert allowed IP"))?,
+        };
+
+        diesel::insert_into(allowed_ips_clients_sending)
+            .values((client_id.eq(client.id), allowed_ip_id.eq(address_id)))
+            .execute(conn)
+            .map(|_| ())
+            .map_err(|e| anyhow::Error::from(e).context("Could not insert sending IP"))
+    }
+
     /// Returns all the allowed IP addresses assigned to the given client
     pub fn get_allowed_ips_for_client(
         client: &Client,
@@ -71,5 +98,20 @@ impl AllowedIp {
             .select(allowed_ips::all_columns)
             .load::<AllowedIp>(conn)
             .map_err(|e| anyhow::Error::from(e).context("Could not get allowed IPs for client"))
+    }
+
+    /// Returns all the IP addresses with that the given client is allowed to send traffic
+    pub fn get_sending_ips_for_client(
+        client: &Client,
+        conn: &mut PgConnection,
+    ) -> anyhow::Result<Vec<AllowedIp>> {
+        use crate::schema::allowed_ips;
+        use crate::schema::allowed_ips_clients_sending::{self, dsl::*};
+        allowed_ips_clients_sending::table
+            .inner_join(allowed_ips::table)
+            .filter(client_id.eq(client.id))
+            .select(allowed_ips::all_columns)
+            .load::<AllowedIp>(conn)
+            .map_err(|e| anyhow::Error::from(e).context("Could not get sending IPs for client"))
     }
 }
