@@ -67,7 +67,11 @@ async fn main() -> Result<(), std::io::Error> {
 
     let app = Route::new()
         .at("/", get(graphiql).post(graphql_handler))
-        .with(Cors::new().allow_origin("localhost").allow_methods(vec![Method::GET, Method::POST]))
+        .with(
+            Cors::new()
+                .allow_origin("localhost")
+                .allow_methods(vec![Method::GET, Method::POST]),
+        )
         .data(schema);
 
     Server::new(TcpListener::bind("0.0.0.0:3000"))
