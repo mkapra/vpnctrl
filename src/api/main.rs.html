@@ -72,73 +72,64 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::env;
 
-<span class="kw">use </span>async_graphql::http::GraphiQLSource;
-<span class="kw">use </span>async_graphql_rocket::{GraphQLRequest, GraphQLResponse};
+<span class="kw">use </span>async_graphql::{http::GraphiQLSource, Request, Response};
 <span class="kw">use </span>database::DatabaseConn;
 <span class="kw">use </span>diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-<span class="kw">use </span>rocket::{
-    get,
-    http::{Method, Status},
-    launch, post,
-    request::Outcome,
-    request::{<span class="self">self</span>, FromRequest},
-    response::content,
-    routes, Request, State,
+<span class="kw">use </span>poem::{
+    get, handler,
+    http::StatusCode,
+    listener::TcpListener,
+    web::{Data, Html, Json},
+    EndpointExt, FromRequest, IntoResponse, RequestBody, Route, Server,
 };
 
 <span class="kw">mod </span>schema;
-<span class="kw">use </span>rocket_cors::AllowedHeaders;
 <span class="kw">use </span>schema::{build_schema, WireguardSchema};
 
 <span class="kw">mod </span>auth;
 <span class="kw">mod </span>database;
 <span class="kw">mod </span>models;
-<span class="kw">use </span>auth::{jwt::Secret, ApiKey};
+<span class="kw">use </span>auth::jwt::Secret;
+
+<span class="kw">use </span>auth::ApiKey;
 
 <span class="kw">pub const </span>MIGRATIONS: EmbeddedMigrations = <span class="macro">embed_migrations!</span>(<span class="string">&quot;../libwgbuilder/migrations/&quot;</span>);
 
-<span class="kw">pub struct </span>SkipGraphiQL;
+<span class="kw">struct </span>CheckForDebug;
 
-<span class="attr">#[rocket::async_trait]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;r</span>&gt; FromRequest&lt;<span class="lifetime">&#39;r</span>&gt; <span class="kw">for </span>SkipGraphiQL {
-    <span class="kw">type </span>Error = anyhow::Error;
-
-    <span class="kw">async fn </span>from_request(<span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>Request&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; request::Outcome&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">match </span><span class="macro">cfg!</span>(debug_assertions) {
-            <span class="bool-val">true </span>=&gt; Outcome::Success(SkipGraphiQL {}),
-            <span class="bool-val">false </span>=&gt; Outcome::Failure((Status::NotFound, <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Not found&quot;</span>))),
-        }
+<span class="attr">#[poem::async_trait]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromRequest&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>CheckForDebug {
+    <span class="kw">async fn </span>from_request(_req: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>poem::Request, _body: <span class="kw-2">&amp;mut </span>RequestBody) -&gt; poem::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">return match </span><span class="macro">cfg!</span>(debug_assertions) {
+            <span class="bool-val">true </span>=&gt; <span class="prelude-val">Ok</span>(CheckForDebug),
+            <span class="bool-val">false </span>=&gt; <span class="prelude-val">Err</span>(poem::Error::from_string(<span class="string">&quot;&quot;</span>, StatusCode::NOT_FOUND)),
+        };
     }
 }
 
-<span class="attr">#[get(<span class="string">&quot;/&quot;</span>)]
-</span><span class="kw">fn </span>graphiql(_skip_graphiql: SkipGraphiQL) -&gt; content::RawHtml&lt;String&gt; {
-    content::RawHtml(GraphiQLSource::build().endpoint(<span class="string">&quot;/graphql&quot;</span>).finish())
+<span class="attr">#[handler]
+</span><span class="kw">async fn </span>graphiql(<span class="kw">_</span>: CheckForDebug) -&gt; <span class="kw">impl </span>IntoResponse {
+    Html(
+        GraphiQLSource::build()
+            .endpoint(<span class="string">&quot;/&quot;</span>)
+            .header(<span class="string">&quot;Authorization&quot;</span>, <span class="string">&quot;Bearer [token]&quot;</span>)
+            .finish(),
+    )
 }
 
-<span class="attr">#[post(<span class="string">&quot;/graphql&quot;</span>, data = <span class="string">&quot;&lt;request&gt;&quot;</span>, format = <span class="string">&quot;application/json&quot;</span>)]
-</span><span class="kw">async fn </span>graphql_request(
-    schema: <span class="kw-2">&amp;</span>State&lt;WireguardSchema&gt;,
-    request: GraphQLRequest,
+<span class="attr">#[handler]
+</span><span class="kw">async fn </span>graphql_handler(
+    schema: Data&lt;<span class="kw-2">&amp;</span>WireguardSchema&gt;,
+    req: Json&lt;Request&gt;,
     api_key: ApiKey,
-) -&gt; GraphQLResponse {
-    request.data(api_key).execute(schema).<span class="kw">await
-</span>}
+) -&gt; Json&lt;Response&gt; {
+    Json(schema.execute(req.<span class="number">0</span>.data(api_key)).<span class="kw">await</span>)
+}
 
-<span class="attr">#[launch]
-</span><span class="kw">fn </span>launch() -&gt; <span class="kw">_ </span>{
+<span class="attr">#[tokio::main]
+</span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), std::io::Error&gt; {
     <span class="kw">let </span>url = env::var(<span class="string">&quot;DATABASE_URL&quot;</span>).expect(<span class="string">&quot;Could not find DATABASE_URL&quot;</span>);
     <span class="kw">let </span>secret = env::var(<span class="string">&quot;SECRET&quot;</span>).expect(<span class="string">&quot;Could not find SECRET for JWT tokens&quot;</span>);
     <span class="kw">let </span>pool = DatabaseConn::new(<span class="kw-2">&amp;</span>url).expect(<span class="string">&quot;Could not build database connection pool&quot;</span>);
@@ -147,24 +138,13 @@
     db.run_pending_migrations(MIGRATIONS)
         .expect(<span class="string">&quot;Could not run migrations&quot;</span>);
 
-    <span class="comment">// Init rocket_cors CORS
-    </span><span class="kw">let </span>allowed_origins = rocket_cors::AllowedOrigins::all();
-    <span class="kw">let </span>cors = rocket_cors::CorsOptions {
-        allowed_origins,
-        allowed_methods: <span class="macro">vec!</span>[Method::Get, Method::Post]
-            .into_iter()
-            .map(From::from)
-            .collect(),
-        allowed_headers: AllowedHeaders::All,
-        ..Default::default()
-    }
-    .to_cors()
-    .expect(<span class="string">&quot;Could not build CORS&quot;</span>);
+    <span class="kw">let </span>app = Route::new()
+        .at(<span class="string">&quot;/&quot;</span>, get(graphiql).post(graphql_handler))
+        .data(schema);
 
-    rocket::build()
-        .manage(schema)
-        .mount(<span class="string">&quot;/&quot;</span>, <span class="macro">routes!</span>[graphql_request, graphiql])
-        .attach(cors)
-}
+    Server::new(TcpListener::bind(<span class="string">&quot;127.0.0.1:3000&quot;</span>))
+        .run(app)
+        .<span class="kw">await
+</span>}
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="api" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.0 (2c8cc3432 2023-03-06)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

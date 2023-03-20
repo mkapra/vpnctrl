@@ -167,14 +167,11 @@
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>async_graphql::{async_trait, Context, Guard, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>libwgbuilder::models::Token;
-<span class="kw">use </span>rocket::{
-    outcome::Outcome,
-    request::{<span class="self">self</span>, FromRequest},
-    Request,
-};
+<span class="kw">use </span>poem::{http::StatusCode, FromRequest, Request, RequestBody};
 
 <span class="kw">use </span><span class="kw">crate</span>::schema::get_db_connection;
 
@@ -266,15 +263,20 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>ApiKey(String);
 
-<span class="attr">#[rocket::async_trait]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;r</span>&gt; FromRequest&lt;<span class="lifetime">&#39;r</span>&gt; <span class="kw">for </span>ApiKey {
-    <span class="kw">type </span>Error = ();
+<span class="attr">#[poem::async_trait]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromRequest&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>ApiKey {
+    <span class="kw">async fn </span>from_request(req: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Request, _body: <span class="kw-2">&amp;mut </span>RequestBody) -&gt; poem::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>token = req
+            .headers()
+            .get(<span class="string">&quot;Authorization&quot;</span>)
+            .and_then(|value| value.to_str().ok())
+            .ok_or_else(|| {
+                poem::Error::from_string(<span class="string">&quot;{\&quot;error\&quot;: \&quot;missing token\&quot;}&quot;</span>, StatusCode::BAD_REQUEST)
+            })<span class="question-mark">?</span>;
 
-    <span class="kw">async fn </span>from_request(request: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>Request&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; request::Outcome&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">match </span>request.headers().get_one(<span class="string">&quot;Authorization&quot;</span>) {
-            <span class="prelude-val">Some</span>(token) =&gt; Outcome::Success(ApiKey(token.split(<span class="string">&quot; &quot;</span>).last().unwrap().to_string())),
-            <span class="kw">_ </span>=&gt; Outcome::Success(ApiKey(<span class="string">&quot;&quot;</span>.to_string())),
-        }
+        <span class="prelude-val">Ok</span>(ApiKey(
+            token.to_string().split(<span class="string">&quot; &quot;</span>).last().unwrap().to_string(),
+        ))
     }
 }
 

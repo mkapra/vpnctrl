@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"api":[["impl Endpoint for <a class=\"struct\" href=\"api/struct.graphiql.html\" title=\"struct api::graphiql\">graphiql</a>"],["impl Endpoint for <a class=\"struct\" href=\"api/struct.graphql_handler.html\" title=\"struct api::graphql_handler\">graphql_handler</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
