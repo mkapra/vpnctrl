@@ -57,6 +57,7 @@ async fn graphql_handler(
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
+    let listen_ip = env::var("LISTEN_ADDR").unwrap_or_else(|_| "127.0.0.1".to_string());
     let url = env::var("DATABASE_URL").expect("Could not find DATABASE_URL");
     let secret = env::var("SECRET").expect("Could not find SECRET for JWT tokens");
     let pool = DatabaseConn::new(&url).expect("Could not build database connection pool");
@@ -74,7 +75,7 @@ async fn main() -> Result<(), std::io::Error> {
         )
         .data(schema);
 
-    Server::new(TcpListener::bind("0.0.0.0:3000"))
+    Server::new(TcpListener::bind(format!("{}:3000", listen_ip)))
         .run(app)
         .await
 }
