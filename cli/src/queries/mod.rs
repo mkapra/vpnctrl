@@ -1,22 +1,24 @@
 use std::fmt::Display;
 
 use anyhow::Error;
-use graphql_client::{GraphQLQuery, reqwest::post_graphql_blocking};
 use anyhow::Result;
-use inquire::{Select, Text, required};
+use graphql_client::{reqwest::post_graphql_blocking, GraphQLQuery};
+use inquire::{required, Select, Text};
 use reqwest::blocking::Client;
 
-use crate::State;
 use self::new_client_information::NewClientInformationDnsServers;
 use self::new_client_information::NewClientInformationVpnNetworks;
+use crate::State;
 
 fn build_client(ctx: &State) -> Result<Client> {
     Client::builder()
         .default_headers(
             std::iter::once((
                 reqwest::header::AUTHORIZATION,
-                reqwest::header::HeaderValue::from_str(&format!("Bearer {}", ctx.jwt_token)).unwrap()
-            )).collect()
+                reqwest::header::HeaderValue::from_str(&format!("Bearer {}", ctx.jwt_token))
+                    .unwrap(),
+            ))
+            .collect(),
         )
         .build()
         .map_err(|e| Error::from(e))
@@ -26,7 +28,7 @@ fn build_client(ctx: &State) -> Result<Client> {
 #[graphql(
     schema_path = "schema.json",
     query_path = "queries/login.graphql",
-    response_derives = "Debug",
+    response_derives = "Debug"
 )]
 pub struct Login;
 
@@ -34,14 +36,19 @@ pub struct Login;
 #[graphql(
     schema_path = "schema.json",
     query_path = "queries/generate_keypair.graphql",
-    response_derives = "Debug",
+    response_derives = "Debug"
 )]
 struct GenerateKeypair;
 
 impl GenerateKeypair {
     fn generate(ctx: &State) -> Result<i64> {
         let client = build_client(ctx)?;
-        let res = post_graphql_blocking::<GenerateKeypair, _>(&client, &ctx.url, generate_keypair::Variables{}).unwrap();
+        let res = post_graphql_blocking::<GenerateKeypair, _>(
+            &client,
+            &ctx.url,
+            generate_keypair::Variables {},
+        )
+        .unwrap();
         let res_data = res.data.expect("Missing response data");
         Ok(res_data.generate_keypair.id)
     }
@@ -51,7 +58,7 @@ impl GenerateKeypair {
 #[graphql(
     schema_path = "schema.json",
     query_path = "queries/new_client.graphql",
-    response_derives = "Debug",
+    response_derives = "Debug"
 )]
 pub struct NewClient;
 
@@ -59,7 +66,7 @@ pub struct NewClient;
 #[graphql(
     schema_path = "schema.json",
     query_path = "queries/information_new_client.graphql",
-    response_derives = "Debug",
+    response_derives = "Debug"
 )]
 pub struct NewClientInformation;
 
@@ -67,7 +74,7 @@ impl Display for NewClientInformationDnsServers {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.description.clone() {
             Some(d) => write!(f, "{}: {} ({})", self.name, d, self.ip),
-            None => write!(f, "{} ({})", self.name, self.ip)
+            None => write!(f, "{} ({})", self.name, self.ip),
         }
     }
 }
@@ -83,10 +90,16 @@ impl NewClientInformation {
         let keypair_id = GenerateKeypair::generate(ctx)?;
         let information = Self::get(ctx)?;
 
-        let client_name = Text::new("Name of the client:").with_validator(required!()).prompt()?;
+        let client_name = Text::new("Name of the client:")
+            .with_validator(required!())
+            .prompt()?;
         let keepalive = Text::new("Keepalive:").with_default("25").prompt()?;
-        let dns_server_id = Select::new("DNS server to use", information.dns_servers).prompt()?.id;
-        let vpn_network_id = Select::new("VPN Network", information.vpn_networks).prompt()?.id;
+        let dns_server_id = Select::new("DNS server to use", information.dns_servers)
+            .prompt()?
+            .id;
+        let vpn_network_id = Select::new("VPN Network", information.vpn_networks)
+            .prompt()?
+            .id;
         let ip_address = Text::new("IP address in VPN network:").prompt()?;
 
         let vpn_client = new_client::NewClient {
@@ -98,21 +111,29 @@ impl NewClientInformation {
             vpn_ip: new_client::NewVpnIp {
                 address: ip_address,
                 vpn_network_id,
-            }
+            },
         };
 
         let client = build_client(ctx)?;
-        let variables = new_client::Variables{
-            new_client: vpn_client
+        let variables = new_client::Variables {
+            new_client: vpn_client,
         };
         let res = post_graphql_blocking::<NewClient, _>(&client, &ctx.url, variables)?;
-        println!("Client with id {} successfully created", res.data.expect("No response data found").new_client.id);
+        println!(
+            "Client with id {} successfully created",
+            res.data.expect("No response data found").new_client.id
+        );
         Ok(())
     }
 
     fn get(ctx: &State) -> Result<new_client_information::ResponseData> {
         let client = build_client(ctx)?;
-        let res = post_graphql_blocking::<Self, _>(&client, &ctx.url, new_client_information::Variables{}).unwrap();
+        let res = post_graphql_blocking::<Self, _>(
+            &client,
+            &ctx.url,
+            new_client_information::Variables {},
+        )
+        .unwrap();
         Ok(res.data.expect("Missing response data"))
     }
 }

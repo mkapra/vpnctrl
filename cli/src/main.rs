@@ -15,7 +15,9 @@ impl State {
     fn new(url: Option<&str>) -> Self {
         Self {
             jwt_token: "".to_string(),
-            url: url.map(|u| u.to_string()).unwrap_or_else(|| "http://localhost:3000".to_string())
+            url: url
+                .map(|u| u.to_string())
+                .unwrap_or_else(|| "http://localhost:3000".to_string()),
         }
     }
 }
@@ -23,8 +25,16 @@ impl State {
 static COMMANDS: Lazy<Vec<Command<fn(Vec<String>, State) -> State>>> = Lazy::new(|| {
     vec![
         Command::new("help", "Prints out this help", print_help),
-        Command::new("login", "Is required to retrieve a token from the API", login),
-        Command::new("new_client", "Creates a new client in the network", new_client),
+        Command::new(
+            "login",
+            "Is required to retrieve a token from the API",
+            login,
+        ),
+        Command::new(
+            "new_client",
+            "Creates a new client in the network",
+            new_client,
+        ),
     ]
 });
 

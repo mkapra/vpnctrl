@@ -1,8 +1,11 @@
 use graphql_client::reqwest::post_graphql_blocking as post_graphql;
-use inquire::{Text, required, Password};
+use inquire::{required, Password, Text};
 use reqwest::blocking::Client;
 
-use crate::{State, COMMANDS, queries::{Login, login, NewClientInformation}};
+use crate::{
+    queries::{login, Login, NewClientInformation},
+    State, COMMANDS,
+};
 
 pub fn print_help(_args: Vec<String>, ctx: State) -> State {
     for cmd in COMMANDS.iter() {
@@ -12,9 +15,7 @@ pub fn print_help(_args: Vec<String>, ctx: State) -> State {
 }
 
 pub fn login(_args: Vec<String>, ctx: State) -> State {
-    let api_url = Text::new("API URL:")
-        .prompt()
-        .unwrap();
+    let api_url = Text::new("API URL:").prompt().unwrap();
     let username = Text::new("Username:")
         .with_validator(required!())
         .prompt()
@@ -29,20 +30,16 @@ pub fn login(_args: Vec<String>, ctx: State) -> State {
         .default_headers(
             std::iter::once((
                 reqwest::header::AUTHORIZATION,
-                reqwest::header::HeaderValue::from_str("Bearer YESYOUFOUNDABUG").unwrap()
-            )).collect()
+                reqwest::header::HeaderValue::from_str("Bearer YESYOUFOUNDABUG").unwrap(),
+            ))
+            .collect(),
         )
         .build()
         .unwrap();
 
-    let variables = login::Variables {
-        username,
-        password
-    };
+    let variables = login::Variables { username, password };
 
-    let mut state = State {
-        ..ctx
-    };
+    let mut state = State { ..ctx };
     if !api_url.is_empty() {
         state.url = api_url;
     }

@@ -23,10 +23,7 @@ impl DnsServer {
         use crate::schema::dns_servers::dsl::*;
         dns_servers
             .load(conn)
-            .map_err(|e| {
-                anyhow::Error::from(e)
-                    .context("Could not load DNS servers")
-            })
+            .map_err(|e| anyhow::Error::from(e).context("Could not load DNS servers"))
     }
 }
 
