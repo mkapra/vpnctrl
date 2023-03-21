@@ -90,6 +90,46 @@ impl Server {
             anyhow::Error::from(e).context("Could not create configuration for server")
         })
     }
+
+    fn get_vpn_ip(&self, conn: &mut PgConnection) -> Result<VpnIp> {
+        use crate::schema::{
+            servers::{self, dsl::*},
+            vpn_ips,
+        };
+        let (_, server_ip): (Self, VpnIp) = servers::table
+            .filter(vpn_ip_id.eq(self.vpn_ip_id))
+            .inner_join(vpn_ips::table)
+            .first(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not get vpn ip address of server")
+            })?;
+        Ok(server_ip)
+    }
+
+    pub fn get_associated_clients(&self, conn: &mut PgConnection) -> Result<Vec<Client>> {
+        use crate::schema::{
+            clients,
+            vpn_ips::{self, dsl::*},
+        };
+
+        let server_ip = self.get_vpn_ip(conn)?;
+
+        let assoc_clients = clients::table
+            .inner_join(vpn_ips::table)
+            .filter(vpn_network_id.eq(server_ip.vpn_network_id))
+            .load::<(Client, VpnIp)>(conn)
+            .map_err(|e| {
+                anyhow::Error::from(e)
+                    .context(Error::Database)
+                    .context("Could not get clients associated with server")
+            })?
+            .into_iter()
+            .map(|(c, _)| c)
+            .collect::<Vec<Client>>();
+        Ok(assoc_clients)
+    }
 }
 
 /// Client representation for the server configuration template
