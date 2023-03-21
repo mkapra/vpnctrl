@@ -72,6 +72,9 @@ pub struct NewClientInformation;
 
 impl Display for NewClientInformationDnsServers {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.id == -1 {
+            return write!(f, "No DNS Server");
+        }
         match self.description.clone() {
             Some(d) => write!(f, "{}: {} ({})", self.name, d, self.ip),
             None => write!(f, "{} ({})", self.name, self.ip),
@@ -94,9 +97,19 @@ impl NewClientInformation {
             .with_validator(required!())
             .prompt()?;
         let keepalive = Text::new("Keepalive:").with_default("25").prompt()?;
-        let dns_server_id = Select::new("DNS server to use", information.dns_servers)
-            .prompt()?
-            .id;
+        let mut dns_servers = vec![NewClientInformationDnsServers {
+            id: -1,
+            name: "".to_string(),
+            ip: "".to_string(),
+            description: None,
+        }];
+        let mut dns_servers_from_api = information.dns_servers;
+        dns_servers.append(&mut dns_servers_from_api);
+        let dns_server_id = Select::new("DNS server to use", dns_servers).prompt()?.id;
+        let dns_server_id = match dns_server_id {
+            -1 => None,
+            x => Some(x),
+        };
         let vpn_network_id = Select::new("VPN Network", information.vpn_networks)
             .prompt()?
             .id;
@@ -105,7 +118,7 @@ impl NewClientInformation {
         let vpn_client = new_client::NewClient {
             name: client_name,
             description: None,
-            dns_server_id: Some(dns_server_id),
+            dns_server_id,
             keepalive: keepalive.parse::<i64>().expect("Keepalive is not a number"),
             keypair_id,
             vpn_ip: new_client::NewVpnIp {
