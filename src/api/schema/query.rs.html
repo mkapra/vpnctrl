@@ -125,7 +125,7 @@
         <span class="kw">let </span>dns_servers = libwgbuilder::models::DnsServer::all(<span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(dns_servers
             .into_iter()
-            .map(|d| DnsServer::from(d))
+            .map(DnsServer::from)
             .collect())
     }
 
@@ -144,7 +144,7 @@
         <span class="kw">let </span>vpn_networks = libwgbuilder::models::VpnNetwork::all(<span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(vpn_networks
             .into_iter()
-            .map(|v| VpnNetwork::from(v))
+            .map(VpnNetwork::from)
             .collect())
     }
 

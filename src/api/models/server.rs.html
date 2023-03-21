@@ -142,7 +142,7 @@
         <span class="prelude-val">Ok</span>(server
             .get_associated_clients(<span class="kw-2">&amp;mut </span>db)<span class="question-mark">?
             </span>.into_iter()
-            .map(|c| Client::from(c))
+            .map(Client::from)
             .collect())
     }
 }
