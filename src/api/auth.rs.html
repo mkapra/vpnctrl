@@ -168,10 +168,13 @@
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>async_graphql::{async_trait, Context, Guard, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>libwgbuilder::models::Token;
-<span class="kw">use </span>poem::{http::StatusCode, FromRequest, Request, RequestBody};
+<span class="kw">use </span>poem::{FromRequest, Request, RequestBody};
 
 <span class="kw">use </span><span class="kw">crate</span>::schema::get_db_connection;
 
@@ -270,12 +273,15 @@
             .headers()
             .get(<span class="string">&quot;Authorization&quot;</span>)
             .and_then(|value| value.to_str().ok())
-            .ok_or_else(|| {
-                poem::Error::from_string(<span class="string">&quot;{\&quot;error\&quot;: \&quot;missing token\&quot;}&quot;</span>, StatusCode::BAD_REQUEST)
-            })<span class="question-mark">?</span>;
+            .unwrap_or(<span class="string">&quot;&quot;</span>);
 
         <span class="prelude-val">Ok</span>(ApiKey(
-            token.to_string().split(<span class="string">&#39; &#39;</span>).last().unwrap().to_string(),
+            token
+                .to_string()
+                .split(<span class="string">&#39; &#39;</span>)
+                .last()
+                .unwrap_or(<span class="string">&quot;&quot;</span>)
+                .to_string(),
         ))
     }
 }

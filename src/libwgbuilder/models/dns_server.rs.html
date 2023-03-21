@@ -74,9 +74,6 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
 </pre><pre class="rust"><code><span class="doccomment">//! DNS server model
 //!
 //! DNS servers are used in the configs for the clients. This config option will set up the DNS server
@@ -102,10 +99,7 @@
         <span class="kw">use </span><span class="kw">crate</span>::schema::dns_servers::dsl::<span class="kw-2">*</span>;
         dns_servers
             .load(conn)
-            .map_err(|e| {
-                anyhow::Error::from(e)
-                    .context(<span class="string">&quot;Could not load DNS servers&quot;</span>)
-            })
+            .map_err(|e| anyhow::Error::from(e).context(<span class="string">&quot;Could not load DNS servers&quot;</span>))
     }
 }
 
