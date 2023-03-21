@@ -36,10 +36,7 @@ impl QueryRoot {
     async fn dns_servers(&self, ctx: &Context<'_>) -> Result<Vec<DnsServer>> {
         let mut db = get_db_connection(ctx)?;
         let dns_servers = libwgbuilder::models::DnsServer::all(&mut db)?;
-        Ok(dns_servers
-            .into_iter()
-            .map(DnsServer::from)
-            .collect())
+        Ok(dns_servers.into_iter().map(DnsServer::from).collect())
     }
 
     /// Returns the requested VPN network
@@ -55,10 +52,7 @@ impl QueryRoot {
     async fn vpn_networks(&self, ctx: &Context<'_>) -> Result<Vec<VpnNetwork>> {
         let mut db = get_db_connection(ctx)?;
         let vpn_networks = libwgbuilder::models::VpnNetwork::all(&mut db)?;
-        Ok(vpn_networks
-            .into_iter()
-            .map(VpnNetwork::from)
-            .collect())
+        Ok(vpn_networks.into_iter().map(VpnNetwork::from).collect())
     }
 
     /// Returns the requested VPN IP address
