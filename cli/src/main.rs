@@ -5,6 +5,8 @@ mod commands;
 use commands::*;
 mod queries;
 
+type CmdFunction = fn(Vec<String>, State) -> State;
+
 #[derive(Debug)]
 pub struct State {
     pub url: String,
@@ -22,7 +24,7 @@ impl State {
     }
 }
 
-static COMMANDS: Lazy<Vec<Command<fn(Vec<String>, State) -> State>>> = Lazy::new(|| {
+static COMMANDS: Lazy<Vec<Command<CmdFunction>>> = Lazy::new(|| {
     vec![
         Command::new("help", "Prints out this help", print_help),
         Command::new(

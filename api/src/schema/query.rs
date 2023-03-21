@@ -38,7 +38,7 @@ impl QueryRoot {
         let dns_servers = libwgbuilder::models::DnsServer::all(&mut db)?;
         Ok(dns_servers
             .into_iter()
-            .map(|d| DnsServer::from(d))
+            .map(DnsServer::from)
             .collect())
     }
 
@@ -57,7 +57,7 @@ impl QueryRoot {
         let vpn_networks = libwgbuilder::models::VpnNetwork::all(&mut db)?;
         Ok(vpn_networks
             .into_iter()
-            .map(|v| VpnNetwork::from(v))
+            .map(VpnNetwork::from)
             .collect())
     }
 

@@ -47,9 +47,7 @@ pub fn login(_args: Vec<String>, ctx: State) -> State {
     let res = post_graphql::<Login, _>(&client, &state.url, variables).unwrap();
     let res_data = res.data.expect("Missing response data");
     state.jwt_token = res_data.login;
-
-    println!("State: {:?}", state);
-    return state;
+    state
 }
 
 pub fn new_client(_args: Vec<String>, ctx: State) -> State {

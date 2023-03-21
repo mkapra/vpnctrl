@@ -21,7 +21,7 @@ fn build_client(ctx: &State) -> Result<Client> {
             .collect(),
         )
         .build()
-        .map_err(|e| Error::from(e))
+        .map_err(Error::from)
 }
 
 #[derive(GraphQLQuery)]
