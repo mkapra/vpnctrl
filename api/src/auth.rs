@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use async_graphql::{async_trait, Context, Guard, Result};
 use libwgbuilder::models::Token;
-use poem::{http::StatusCode, FromRequest, Request, RequestBody};
+use poem::{FromRequest, Request, RequestBody};
 
 use crate::schema::get_db_connection;
 
@@ -100,12 +100,15 @@ impl<'a> FromRequest<'a> for ApiKey {
             .headers()
             .get("Authorization")
             .and_then(|value| value.to_str().ok())
-            .ok_or_else(|| {
-                poem::Error::from_string("{\"error\": \"missing token\"}", StatusCode::BAD_REQUEST)
-            })?;
+            .unwrap_or("");
 
         Ok(ApiKey(
-            token.to_string().split(' ').last().unwrap().to_string(),
+            token
+                .to_string()
+                .split(' ')
+                .last()
+                .unwrap_or("")
+                .to_string(),
         ))
     }
 }
