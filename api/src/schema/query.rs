@@ -31,12 +31,31 @@ impl QueryRoot {
         Ok(DnsServer::from(dns_server))
     }
 
+    /// Returns all dns servers
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn dns_servers(&self, ctx: &Context<'_>) -> Result<Vec<DnsServer>> {
+        let mut db = get_db_connection(ctx)?;
+        let dns_servers = libwgbuilder::models::DnsServer::all(&mut db)?;
+        Ok(dns_servers.into_iter().map(|d| DnsServer::from(d)).collect())
+    }
+
     /// Returns the requested VPN network
     #[graphql(guard = "AdminGuard::new()")]
     async fn vpn_network(&self, ctx: &Context<'_>, id: i32) -> Result<VpnNetwork> {
         let mut db = get_db_connection(ctx)?;
         let vpn_network = libwgbuilder::models::VpnNetwork::find(id, &mut db)?;
         Ok(VpnNetwork::from(vpn_network))
+    }
+
+    /// Returns all VPN networks
+    #[graphql(guard = "AdminGuard::new()")]
+    async fn vpn_networks(&self, ctx: &Context<'_>) -> Result<Vec<VpnNetwork>> {
+        let mut db = get_db_connection(ctx)?;
+        let vpn_networks = libwgbuilder::models::VpnNetwork::all(&mut db)?;
+        Ok(vpn_networks
+            .into_iter()
+            .map(|v| VpnNetwork::from(v))
+            .collect())
     }
 
     /// Returns the requested VPN IP address
