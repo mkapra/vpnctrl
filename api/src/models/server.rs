@@ -63,7 +63,7 @@ impl Server {
         Ok(server
             .get_associated_clients(&mut db)?
             .into_iter()
-            .map(|c| Client::from(c))
+            .map(Client::from)
             .collect())
     }
 }
