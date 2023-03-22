@@ -76,7 +76,6 @@
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_graphql::Context;
 <span class="kw">use </span>async_graphql::InputObject;
@@ -129,8 +128,7 @@
         <span class="prelude-val">Ok</span>(VpnIp::from(DbVpnIp::find(client.vpn_ip_id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>))
     }
 
-    <span class="attr">#[graphql(guard = <span class="string">&quot;ServerGuard::new(self.id)&quot;</span>)]
-    </span><span class="kw">async fn </span>configuration(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
+    <span class="kw">async fn </span>configuration(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
         <span class="kw">let </span>server = DbServer::find(<span class="self">self</span>.id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         server.configuration(<span class="kw-2">&amp;mut </span>db)
