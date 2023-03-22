@@ -7,7 +7,7 @@ use libwgbuilder::models::{
 
 use crate::schema::get_db_connection;
 
-use super::{vpn_ip::NewVpnIp, DnsServer, Keypair, VpnIp};
+use super::{vpn_ip::NewVpnIp, DnsServer, Keypair, Server, VpnIp};
 
 #[derive(SimpleObject)]
 #[graphql(complex)]
@@ -75,6 +75,14 @@ impl Client {
         let client = DbClient::find(self.id, &mut db)?;
         AllowedIp::get_sending_ips_for_client(&client, &mut db)
             .map(|v| v.into_iter().map(|a| a.address).collect())
+    }
+
+    async fn server(&self, ctx: &Context<'_>) -> Result<Server> {
+        let mut db = get_db_connection(ctx)?;
+        let client = DbClient::find(self.id, &mut db)?;
+        client
+            .get_associated_server(&mut db)
+            .map(|s| Server::from(s))
     }
 }
 
