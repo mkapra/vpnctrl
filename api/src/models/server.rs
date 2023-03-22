@@ -50,7 +50,6 @@ impl Server {
         Ok(VpnIp::from(DbVpnIp::find(client.vpn_ip_id, &mut db)?))
     }
 
-    #[graphql(guard = "ServerGuard::new(self.id)")]
     async fn configuration(&self, ctx: &Context<'_>) -> Result<String> {
         let mut db = get_db_connection(ctx)?;
         let server = DbServer::find(self.id, &mut db)?;
