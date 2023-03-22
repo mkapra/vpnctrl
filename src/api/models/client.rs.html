@@ -87,6 +87,14 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_graphql::{ComplexObject, Context, InputObject, SimpleObject};
 <span class="kw">use </span>libwgbuilder::models::{
@@ -96,7 +104,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::schema::get_db_connection;
 
-<span class="kw">use super</span>::{vpn_ip::NewVpnIp, DnsServer, Keypair, VpnIp};
+<span class="kw">use super</span>::{vpn_ip::NewVpnIp, DnsServer, Keypair, Server, VpnIp};
 
 <span class="attr">#[derive(SimpleObject)]
 #[graphql(complex)]
@@ -164,6 +172,14 @@
         <span class="kw">let </span>client = DbClient::find(<span class="self">self</span>.id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
         AllowedIp::get_sending_ips_for_client(<span class="kw-2">&amp;</span>client, <span class="kw-2">&amp;mut </span>db)
             .map(|v| v.into_iter().map(|a| a.address).collect())
+    }
+
+    <span class="kw">async fn </span>server(<span class="kw-2">&amp;</span><span class="self">self</span>, ctx: <span class="kw-2">&amp;</span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Server&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>db = get_db_connection(ctx)<span class="question-mark">?</span>;
+        <span class="kw">let </span>client = DbClient::find(<span class="self">self</span>.id, <span class="kw-2">&amp;mut </span>db)<span class="question-mark">?</span>;
+        client
+            .get_associated_server(<span class="kw-2">&amp;mut </span>db)
+            .map(|s| Server::from(s))
     }
 }
 
