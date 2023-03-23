@@ -12,7 +12,7 @@ jobs:
         uses: fountainhead/action-wait-for-check@v1.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: 'Release Build'
+          checkName: build-release
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Check for prerelease
         id: check-prerelease
