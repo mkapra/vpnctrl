@@ -14,7 +14,7 @@ jobs:
         with:
           draft: true
           prerelease: true
-          body_path: changelog/${{ github.ref }}.md
+          body_path: changelog/${{ github.ref_name }}.md
           files: |
             vpnctrl-client-ubuntu-latest
             vpnctrl-client-macos-latest

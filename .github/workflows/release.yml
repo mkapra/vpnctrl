@@ -13,7 +13,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          body_path: changelog/${{ github.ref }}.md
+          body_path: changelog/${{ github.ref_name }}.md
           files: |
             vpnctrl-client-ubuntu-latest
             vpnctrl-client-macos-latest
