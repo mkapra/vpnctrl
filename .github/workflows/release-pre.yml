@@ -2,6 +2,8 @@ on:
   push:
     tags:
       - 'v*-pre*' # Push events to matching v*-pre, i.e. v1.0-pre, v20.15.10-pre2
+    tags_ignore:
+      - 'v*'
 
 name: Create Release
 jobs:
@@ -17,6 +19,8 @@ jobs:
           workflow: releasebuild.yml
           workflow_conclusion: success
           branch: main
+      - name: LS
+        run: ls -lR
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
