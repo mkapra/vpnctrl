@@ -1,7 +1,7 @@
 on: push
 name: Release Build
 jobs:
-  release:
+  build-release:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
