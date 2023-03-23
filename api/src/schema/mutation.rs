@@ -23,20 +23,13 @@ use crate::models::user::NewUser;
 use crate::models::Server;
 use crate::models::{
     client::NewClient, dns_server::NewDnsServer, vpn_network::NewVpnNetwork, Client, DnsServer,
-    Keypair, VpnNetwork,
+    VpnNetwork,
 };
 
 pub struct Mutation;
 
 #[Object]
 impl Mutation {
-    /// Generates a keypair
-    #[graphql(guard = "AdminGuard::new()")]
-    async fn generate_keypair(&self, ctx: &Context<'_>) -> Result<Keypair> {
-        let mut db = get_db_connection(ctx)?;
-        Ok(Keypair::from(NewDbKeypair::generate(&mut db)?))
-    }
-
     /// Creates a DNS Server
     #[graphql(guard = "AdminGuard::new()")]
     async fn new_dns_server(
@@ -78,6 +71,7 @@ impl Mutation {
         // Create VPN IP address
         let ip =
             NewVpnIp::new(&client.vpn_ip.address, client.vpn_ip.vpn_network_id).create(&mut db)?;
+        let keypair_id = NewDbKeypair::generate(&mut db)?.id;
 
         Ok(Client::from(
             NewDbClient::new(
@@ -85,7 +79,7 @@ impl Mutation {
                 client.description,
                 client.dns_server_id,
                 client.keepalive,
-                client.keypair_id,
+                keypair_id,
                 ip.id,
             )
             .create(&mut db)?,
@@ -100,13 +94,14 @@ impl Mutation {
         // Create VPN IP address
         let ip =
             NewVpnIp::new(&server.vpn_ip.address, server.vpn_ip.vpn_network_id).create(&mut db)?;
+        let keypair_id = NewDbKeypair::generate(&mut db)?.id;
 
         Ok(Server::from(
             NewDbServer::new(
                 &server.name,
                 server.description,
                 server.forward_interface,
-                server.keypair_id,
+                keypair_id,
                 ip.id,
                 &server.external_ip,
             )

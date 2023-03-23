@@ -92,6 +92,5 @@ pub struct NewClient {
     pub description: Option<String>,
     pub dns_server_id: Option<i32>,
     pub keepalive: i32,
-    pub keypair_id: i32,
     pub vpn_ip: NewVpnIp,
 }
