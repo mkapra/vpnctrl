@@ -19,8 +19,11 @@ jobs:
           workflow: releasebuild.yml
           workflow_conclusion: success
           branch: main
-      - name: LS
-        run: ls -lR
+      - name: Rename binaries
+        run: |
+          mkdir releases
+          cp vpnctrl-client-macos-latest/client releases/vpnctrl-client-macos-${{ github.ref_name }}
+          cp vpnctrl-client-ubuntu-latest/client releases/vpnctrl-client-ubuntu-${{ github.ref_name }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -28,5 +31,5 @@ jobs:
           prerelease: true
           body_path: changelog/${{ github.ref_name }}.md
           files: |
-            vpnctrl-client-ubuntu-latest
-            vpnctrl-client-macos-latest
+            releases/vpnctrl-client-macos-${{ github.ref_name }}
+            releases/vpnctrl-client-ubuntu-${{ github.ref_name }}
