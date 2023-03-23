@@ -17,7 +17,12 @@ impl Login {
         let client = build_client(ctx)?;
         let variables = login::Variables { username, password };
 
-        let res = post_graphql::<Login, _>(&client, &ctx.url, variables).map_err(|e| Error::from(e).context(format!("Could not login to {}. Wrong username or password?", ctx.url)))?;
+        let res = post_graphql::<Login, _>(&client, &ctx.url, variables).map_err(|e| {
+            Error::from(e).context(format!(
+                "Could not login to {}. Wrong username or password?",
+                ctx.url
+            ))
+        })?;
         res.data
             .map(|d| d.login)
             .ok_or(anyhow!("Could not get login response from API"))

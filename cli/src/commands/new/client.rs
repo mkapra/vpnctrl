@@ -5,7 +5,8 @@ use inquire::{required, Select, Text};
 use crate::{queries::NewClientInformation, State};
 
 pub fn new_client(_args: Vec<String>, ctx: &mut State) -> Result<()> {
-    let information = NewClientInformation::get(&ctx).map_err(|e| e.context("Did not receive any informations"))?;
+    let information = NewClientInformation::get(&ctx)
+        .map_err(|e| e.context("Did not receive any informations"))?;
 
     let client_name = Text::new("Name of the client:")
         .with_validator(required!())
