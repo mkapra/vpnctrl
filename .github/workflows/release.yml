@@ -6,13 +6,14 @@ on:
 name: Create Release
 jobs:
   release:
-    needs: build-release
-    - uses: actions/download-artifact@v3
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        draft: true
-        body_path: changelog/${{ github.ref }}.md
-        files: |
-          vpnctrl-client-ubuntu-latest
-          vpnctrl-client-macos-latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          body_path: changelog/${{ github.ref }}.md
+          files: |
+            vpnctrl-client-ubuntu-latest
+            vpnctrl-client-macos-latest
