@@ -20,3 +20,7 @@ jobs:
         with:
           name: vpnctrl-client-${{ matrix.os }}
           path: target/release/client
+      - uses: actions/upload-artifact@v1
+        with:
+          name: vpnctrl-cli-${{ matrix.os }}
+          path: target/release/cli

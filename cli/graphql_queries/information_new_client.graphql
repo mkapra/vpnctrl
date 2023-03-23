@@ -1,0 +1,13 @@
+query NewClientInformation {
+    dnsServers {
+        id
+        name
+        ip
+        description
+    }
+    vpnNetworks {
+        id
+        network
+        subnetmask
+    }
+}
