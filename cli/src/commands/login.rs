@@ -1,32 +1,31 @@
+use anyhow::{Error, Result};
 use inquire::{required, Password, Text};
 
 use crate::{queries::Login, State};
 
 type UserInput = (String, String);
 
-fn get_user_data(ctx: State) -> (UserInput, State) {
+fn get_user_data(ctx: &mut State) -> Result<UserInput> {
     let api_url = Text::new("API URL:").prompt().unwrap();
-
-    let mut state = State { ..ctx };
     if !api_url.is_empty() {
-        state.url = api_url.clone();
+        ctx.url = api_url.clone();
     }
 
     let username = Text::new("Username:")
         .with_validator(required!())
         .prompt()
-        .unwrap();
+        .map_err(|e| Error::from(e).context("Could not get username"))?;
     let password = Password::new("Password:")
         .without_confirmation()
         .with_validator(required!())
         .prompt()
-        .unwrap();
-    ((username, password), state)
+        .map_err(|e| Error::from(e).context("Could not get password"))?;
+    Ok((username, password))
 }
 
-pub fn login(_args: Vec<String>, ctx: State) -> State {
-    let ((username, password), mut state) = get_user_data(ctx);
-    let token = Login::query(&state, username, password).unwrap();
-    state.jwt_token = token;
-    state
+pub fn login(_args: Vec<String>, ctx: &mut State) -> Result<()> {
+    let (username, password) = get_user_data(ctx)?;
+    let token = Login::query(&ctx, username, password);
+    ctx.jwt_token = token?;
+    Ok(())
 }

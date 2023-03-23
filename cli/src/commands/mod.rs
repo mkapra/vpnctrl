@@ -1,4 +1,5 @@
 //! Module with all the commands according with their information gathering
+use anyhow::Result;
 use once_cell::sync::Lazy;
 
 use crate::State;
@@ -8,14 +9,14 @@ pub use login::login;
 mod new;
 use new::new_client;
 
-type CmdFunction = fn(Vec<String>, State) -> State;
+type CmdFunction = fn(Vec<String>, &mut State) -> Result<()>;
 
 /// Prints out the help for a [`Command`]
-pub fn print_help(_args: Vec<String>, ctx: State) -> State {
+pub fn print_help(_args: Vec<String>, _ctx: &mut State) -> Result<()> {
     for cmd in COMMANDS.iter() {
         println!("{}:\t{}", cmd.name, cmd.help);
     }
-    ctx
+    Ok(())
 }
 
 /// All available commands
@@ -37,7 +38,7 @@ pub static COMMANDS: Lazy<Vec<Command<CmdFunction>>> = Lazy::new(|| {
 
 pub struct Command<C>
 where
-    C: Fn(Vec<String>, State) -> State,
+    C: Fn(Vec<String>, &mut State) -> Result<()>,
 {
     /// The name of a command is called by the user
     pub name: String,
@@ -49,7 +50,7 @@ where
 
 impl<C> Command<C>
 where
-    C: Fn(Vec<String>, State) -> State,
+    C: Fn(Vec<String>, &mut State) -> Result<()>,
 {
     fn new(name: &str, help: &str, exec: C) -> Self {
         Self {

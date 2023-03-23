@@ -1,3 +1,6 @@
+use std::process;
+
+use color_print::cprintln;
 use inquire::{required, Text};
 
 mod commands;
@@ -23,13 +26,17 @@ impl Default for State {
 fn main() {
     let mut state = State::default();
     loop {
-        let cmd = Text::new("> ")
-            .with_validator(required!())
-            .prompt()
-            .expect("Could not get command from user");
+        let cmd = Text::new("> ").with_validator(required!()).prompt();
+        if cmd.is_err() {
+            process::exit(1);
+        }
+        let cmd = cmd.unwrap();
         for existing_cmd in COMMANDS.iter() {
             if existing_cmd.name == cmd {
-                state = (existing_cmd.exec)(vec!["".to_string()], state);
+                let res = (existing_cmd.exec)(vec!["".to_string()], &mut state);
+                if let Err(e) = res {
+                    cprintln!("<bold,red>Error</bold,red>: {}", e);
+                }
                 break;
             }
         }

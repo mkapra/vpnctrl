@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Error, Result};
 use graphql_client::{reqwest::post_graphql_blocking as post_graphql, GraphQLQuery};
 
 use super::{build_client, State};
@@ -17,7 +17,7 @@ impl Login {
         let client = build_client(ctx)?;
         let variables = login::Variables { username, password };
 
-        let res = post_graphql::<Login, _>(&client, &ctx.url, variables).unwrap();
+        let res = post_graphql::<Login, _>(&client, &ctx.url, variables).map_err(|e| Error::from(e).context(format!("Could not login to {}. Wrong username or password?", ctx.url)))?;
         res.data
             .map(|d| d.login)
             .ok_or(anyhow!("Could not get login response from API"))
