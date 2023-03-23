@@ -12,13 +12,13 @@ jobs:
         with:
           toolchain: nightly
           override: true
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: ${{ matrix.job.os }}
       - uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release
-      - uses: Swatinem/rust-cache@v2
-        with:
-          prefix-key: ${{ matrix.job.os }}
       - uses: actions/upload-artifact@v1
         with:
           name: vpnctrl-client-${{ matrix.os }}
