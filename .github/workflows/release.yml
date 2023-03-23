@@ -18,9 +18,9 @@ jobs:
         id: check-prerelease
         run: |
           if [[ ${{ github.ref_name }} == *"pre"* ]]; then
-            echo "::set-env name=PRERELEASE::true"
+            echo "prerelease=true" >> $GITHUB_ENV
           else
-            echo "::set-env name=PRERELEASE::false"
+            echo "prerelease=false" >> $GITHUB_ENV
           fi
       - uses: actions/checkout@v2
       - name: Download artifact
@@ -40,7 +40,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          prerelease: ${{ steps.check-prerelease.outputs.PRERELEASE }}
+          prerelease: ${{ env.prerelease }}
           body_path: changelog/${{ github.ref_name }}.md
           files: |
             releases/vpnctrl-client-macos-${{ github.ref_name }}
