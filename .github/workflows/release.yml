@@ -8,11 +8,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait on release build
-        uses: lewagon/wait-on-check-action@v1.3.1
+      - name: Wait for release build to succeed
+        uses: fountainhead/action-wait-for-check@v1.1.0
         with:
-          ref: ${{ github.ref }}
-          check-name: 'Release Build'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'Release Build'
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Check for prerelease
         id: check-prerelease
         run: |
