@@ -3,8 +3,6 @@ use std::fmt::Display;
 use anyhow::Result;
 use graphql_client::{reqwest::post_graphql_blocking, GraphQLQuery};
 
-use crate::queries::new::keypair::GenerateKeypair;
-
 pub use self::new_client_information::{
     NewClientInformationDnsServers, NewClientInformationVpnNetworks,
 };
@@ -35,14 +33,11 @@ impl NewClientInformation {
         vpn_network_id: i64,
         ip_address: String,
     ) -> Result<()> {
-        let keypair_id = GenerateKeypair::generate(ctx)?;
-
         let vpn_client = new_client::NewClient {
             name: client_name,
             description: None,
             dns_server_id,
             keepalive,
-            keypair_id,
             vpn_ip: new_client::NewVpnIp {
                 address: ip_address,
                 vpn_network_id,
