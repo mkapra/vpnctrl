@@ -10,6 +10,7 @@ use libwgbuilder::models::VpnIp as DbVpnIp;
 use crate::{auth::ServerGuard, schema::get_db_connection};
 
 use super::vpn_ip::NewVpnIp;
+use super::Client;
 use super::Keypair;
 use super::VpnIp;
 
@@ -49,11 +50,20 @@ impl Server {
         Ok(VpnIp::from(DbVpnIp::find(client.vpn_ip_id, &mut db)?))
     }
 
-    #[graphql(guard = "ServerGuard::new(self.id)")]
     async fn configuration(&self, ctx: &Context<'_>) -> Result<String> {
         let mut db = get_db_connection(ctx)?;
         let server = DbServer::find(self.id, &mut db)?;
         server.configuration(&mut db)
+    }
+
+    async fn clients(&self, ctx: &Context<'_>) -> Result<Vec<Client>> {
+        let mut db = get_db_connection(ctx)?;
+        let server = DbServer::find(self.id, &mut db)?;
+        Ok(server
+            .get_associated_clients(&mut db)?
+            .into_iter()
+            .map(Client::from)
+            .collect())
     }
 }
 
