@@ -7,7 +7,7 @@ use libwgbuilder::models::Model;
 use libwgbuilder::models::Server as DbServer;
 use libwgbuilder::models::VpnIp as DbVpnIp;
 
-use crate::{auth::ServerGuard, schema::get_db_connection};
+use crate::schema::get_db_connection;
 
 use super::vpn_ip::NewVpnIp;
 use super::Client;
@@ -72,7 +72,6 @@ pub struct NewServer {
     pub name: String,
     pub description: Option<String>,
     pub forward_interface: Option<String>,
-    pub keypair_id: i32,
     pub external_ip: String,
     pub vpn_ip: NewVpnIp,
 }
