@@ -1,9 +1,7 @@
 on:
   push:
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-    tags-ignore:
-      - 'v*-pre*'
+      - 'v*'
 
 name: Create Release
 jobs:
@@ -15,6 +13,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
           check-name: 'Release Build'
+      - name: Check for prerelease
+        id: check-prerelease
+        run: |
+          if [[ ${{ github.ref_name }} == *"pre"* ]]; then
+            echo "::set-env name=PRERELEASE::true"
+          else
+            echo "::set-env name=PRERELEASE::false"
+          fi
       - uses: actions/checkout@v2
       - name: Download artifact
         id: download-artifact
@@ -33,6 +39,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: true
+          prerelease: ${{ steps.check-prerelease.outputs.PRERELEASE }}
           body_path: changelog/${{ github.ref_name }}.md
           files: |
             releases/vpnctrl-client-macos-${{ github.ref_name }}
