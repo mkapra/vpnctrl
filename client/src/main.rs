@@ -25,9 +25,7 @@ struct Arguments {
     /// Whether the wireguard client should be restarted after a configuration change
     #[arg(short, long)]
     restart_wireguard: bool,
-    /// How often the client should check for configuration changes in minutes
-    #[arg(short, long, default_value_t = 5)]
-    pub interval: i32,
+
     #[command(subcommand)]
     pub r#type: Type,
 }
@@ -153,10 +151,9 @@ async fn main() {
     let cfg = confy::load_path::<Configuration>(&args.configuration_path)
         .expect("Could not read configuration file");
 
-    loop {
-        if let Err(e) = get_and_write_wg_config(&args, &cfg).await {
-            eprintln!("{}", e);
-        }
-        tokio::time::sleep(std::time::Duration::from_secs((&args.interval * 60) as u64)).await;
+    if let Err(e) = get_and_write_wg_config(&args, &cfg).await {
+        eprintln!("{}", e);
+    } else {
+        println!("Updated Config.");
     }
 }
